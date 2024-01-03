@@ -1,3 +1,4 @@
+from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from main.models.user_model import User
 
@@ -5,7 +6,7 @@ import jwt
 import os
 
 
-class JWTAuthentication:
+class JWTAuthentication(BaseAuthentication):
     def authenticate(self, request):
         # print(request.META.get('HTTP_AUTHORIZATION'))
         token = self.get_token_from_request(request)
@@ -36,6 +37,7 @@ class JWTAuthentication:
         
         if user.refreshToken == '':
             raise AuthenticationFailed('Token invalid or used', 401)
+        user.is_authenticated = True
 
         return (user, None)
 
@@ -45,6 +47,6 @@ class JWTAuthentication:
             return auth_header.split(' ')[1]
         return None
     
-    def authenticate_header(self, request):
-        print("authenticate header")
-        pass
+    # def authenticate_header(self, request):
+    #     print("authenticate header")
+    #     pass

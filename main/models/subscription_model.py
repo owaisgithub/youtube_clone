@@ -4,10 +4,10 @@ from .user_model import User
 
 
 class Subscription(models.Model):
-    subscriber = models.ForeignKey(User)
-    channel = models.ForeignKey(User)
-    createAt = models.DateTimeField(add_auto_now=True)
-    updateAt = models.DateTimeField(add_now=True)
+    subscriber = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriber')
+    channel = models.ForeignKey(User, on_delete=models.CASCADE, related_name='channel')
+    createAt = models.DateTimeField(auto_now_add=True)
+    updateAt = models.DateTimeField(auto_now=True)
     
     class Meta:
         db_table = 'Subscriptions'

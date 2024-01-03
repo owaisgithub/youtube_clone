@@ -27,8 +27,11 @@ def uploadOnCloudinry(file):
     
 def deleteFromCloudinry(public_id):
     try:
-        result = cloudinary.api.delete_resources(public_id, resource_type="image", type="upload")
-        print(result)
+        result = cloudinary.api.delete_resources(
+            public_id, 
+            resource_type="image", 
+            type="upload"
+        )
         return result
     except Exception as e:
         return None

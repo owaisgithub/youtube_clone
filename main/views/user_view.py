@@ -13,8 +13,6 @@ from main.utils.api_error import apiError
 from main.auth.authenticate import authenticate
 import jwt
 import os
-from django.conf import settings
-import datetime
 
 secret_key = "owaismfos"
 
