@@ -14,8 +14,6 @@ from main.auth.authenticate import authenticate
 import jwt
 import os
 
-secret_key = "owaismfos"
-
 class UserView(APIView):
     permission_classes = [AllowAny]
     
