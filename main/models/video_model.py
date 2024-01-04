@@ -20,9 +20,9 @@ class Video(models.Model):
         db_table = 'Videos'
         
     @classmethod
-    def getVideoById(self, id):
+    def getVideoById(self, videoId):
         try:
-            return Video.objects.get(id=id)
+            return Video.objects.get(id = videoId)
         except Exception as e:
             return None
         
@@ -36,7 +36,7 @@ class Video(models.Model):
                                          thumbnail = data.get('thumbnail'),
                                          thumbnail_id = data.get('thumbnail_id'),
                                          duration = data.get('duration'),
-                                         user = data.get('user')
+                                         user_id = data.get('userId')
                                          )
             video.save()
             return video
@@ -46,6 +46,16 @@ class Video(models.Model):
     @classmethod
     def getAllVideoOfUser(self, userId):
         return Video.objects.filter(user_id = userId)
+    
+    
+    @classmethod
+    def getAllVideosOfUser(self, userId):
+        videos = Video.objects.filter(user_id = userId)
+        videosList = [
+            video.to_dict() for video in videos
+        ]
+        return videosList
+    
         
     def to_dict(self):
         return {
@@ -56,7 +66,7 @@ class Video(models.Model):
             'thumbnail': self.thumbnail,
             'duration': self.duration,
             'views': self.views,
-            'user': self.user,
+            'userId': self.user_id,
             'createdAt': self.createAt,
             'updatedAt': self.updateAt
         }

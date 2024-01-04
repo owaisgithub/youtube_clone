@@ -9,4 +9,5 @@ urlpatterns = [
     path('refreshed-tokens', RefreshedAccessTokens.as_view()),
     path('reset-password', ResetPassword.as_view()),
     path('update-avatar', UpdateAvatar.as_view()),
+    path('user-profile', UserProfile.as_view()),
 ]

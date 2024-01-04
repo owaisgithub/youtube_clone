@@ -13,23 +13,23 @@ class Subscription(models.Model):
         db_table = 'Subscriptions'
         
     @classmethod
-    def subscribeChannel(self, data):
+    def subscribeChannel(self, subscriberId, channelId):
         try:
-            subscribe = Subscription.objects.create(subscriber = data.get('subscriber'),
-                                                    channel = data.get('channel'))
+            subscribe = Subscription.objects.create(subscriber_id = subscriberId,
+                                                    channel_id = channelId)
             subscribe.save()
             return subscribe
         except Exception as e:
             return None
     
     @classmethod
-    def getSubscriptionAndSubcriber(self, user):
+    def getSubscriptionAndSubcriber(self, userId):
         subscribers = []
         subscriptions = []
-        subscriberObjects = Subscription.objects.filter(channel = user)
-        subscriptionObjects = Subscription.objects.filter(subcriber = user)
+        subscriberObjects = Subscription.objects.filter(channel_id = userId)
+        subscriptionObjects = Subscription.objects.filter(subscriber_id = userId)
         for subcriber in subscriberObjects:
-            user = User.getUserById(subcriber.subscriber)
+            user = User.getUserById(subcriber.subscriber_id)
             subcriberDetail = {
                 'id': user.id,
                 'username': '@' + user.username,
@@ -38,7 +38,7 @@ class Subscription(models.Model):
             subscribers.append(subcriberDetail)
             
         for subscription in subscriptionObjects:
-            user = User.getUserById(subscription.channel)
+            user = User.getUserById(subscription.channel_id)
             subscriptionDetail = {
                 'id': user.id,
                 'username': '@' + user.username,
@@ -56,7 +56,7 @@ class Subscription(models.Model):
         
     @classmethod
     def getSubscribers(self, user_id):
-        pass
+        
     
     @classmethod
     def getSubscriptions(self, user_id):

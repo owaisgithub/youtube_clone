@@ -62,9 +62,9 @@ class User(models.Model):
             'email': self.email,
             'username': self.username,
             'avatar': self.avatar,
-            'avatar_id': self.avatar_id,
-            'password': self.password,
-            'refreshToken': self.refreshToken,
+            # 'avatar_id': self.avatar_id,
+            # 'password': self.password,
+            # 'refreshToken': self.refreshToken,
             'createdAt': self.createdAt,
             'updatedAt': self.updatedAt
         }
@@ -78,8 +78,8 @@ class User(models.Model):
             'exp': datetime.utcnow() + timedelta(days=int(os.getenv('ACCESS_TOKEN_EXPIRY'))),
             'iat': datetime.utcnow()
         }
-        accessTokenSecretKey = os.getenv('ACCESS_TOKEN_SECRET')
-        accessToken = jwt.encode(accessPayload, accessTokenSecretKey, algorithm='HS256') # generate a token
+        tokenSecretKey = os.getenv('TOKEN_SECRET')
+        accessToken = jwt.encode(accessPayload, tokenSecretKey, algorithm='HS256') # generate a token
         
         return accessToken
     
@@ -89,8 +89,8 @@ class User(models.Model):
             'exp': datetime.utcnow() + timedelta(days=int(os.getenv('REFRESH_TOKEN_EXPIRY'))),
             'iat': datetime.utcnow()
         }
-        refreshTokenSecretKey = os.getenv('REFRESH_TOKEN_SECRET')
-        refreshToken = jwt.encode(refreshPayload, refreshTokenSecretKey, algorithm='HS256')
+        tokenSecretKey = os.getenv('TOKEN_SECRET')
+        refreshToken = jwt.encode(refreshPayload, tokenSecretKey, algorithm='HS256')
         
         return refreshToken
     

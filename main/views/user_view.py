@@ -7,6 +7,8 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.hashers import make_password, check_password
 
 from main.models.user_model import User
+from main.models.video_model import Video
+from main.models.subscription_model import Subscription
 from main.utils.cloudinary import uploadOnCloudinry, deleteFromCloudinry
 from main.utils.api_response import apiResponse
 from main.utils.api_error import apiError
@@ -85,6 +87,7 @@ class LogoutView(APIView):
 
 
 class RefreshedAccessTokens(APIView):
+    permission_classes = [AllowAny]
     def get_token_from_request(self, request):
         auth_header = request.META.get('HTTP_AUTHORIZATION')
         if auth_header and auth_header.startswith('Bearer '):
@@ -97,21 +100,24 @@ class RefreshedAccessTokens(APIView):
             return Response(apiError(401, "Token is required"), status=status.HTTP_401_UNAUTHORIZED)
         
         try:
-            tokenSecretKey = os.getenv('REFRESH_TOKEN_SECRET')
+            tokenSecretKey = os.getenv('TOKEN_SECRET')
             payload = jwt.decode(refreshToken, tokenSecretKey, algorithms=['HS256']) ## decode the token
             print(payload)
         except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Refresh token has expired')
+            return Response(apiError(401, "Token has expired"), status=status.HTTP_401_UNAUTHORIZED)
+            # raise AuthenticationFailed('Refresh token has expired')
         except jwt.InvalidTokenError as e:
-            print("Invalid token:", str(e))
-            raise AuthenticationFailed('Refresh token is invalid')
+            # print("Invalid token:", str(e))
+            return Response({"status":"failed"})
+            # raise AuthenticationFailed('Refresh token is invalid')
         
         try:
             user_id = payload.get('id')
             user = User.getUserById(user_id)
             print('get user instance')
             if user.refreshToken != refreshToken:
-                raise AuthenticationFailed('Refresh token is invalid')
+                return Response(apiError(401, "Refresh token is invalid"), status=status.HTTP_401_UNAUTHORIZED)
+                # raise AuthenticationFailed('Refresh token is invalid')
             tokens = {
                 'accessToken': user.generateAccessToken(),
                 'refreshToken': user.generateRefreshToken()
@@ -119,7 +125,8 @@ class RefreshedAccessTokens(APIView):
             user.refreshToken = tokens['refreshToken']
             user.save()
         except User.DoesNotExist:
-            raise AuthenticationFailed('User not found')
+            return Response(apiError(401, 'User does not exist'), status=status.HTTP_401_UNAUTHORIZED)
+            # raise AuthenticationFailed('User not found')
         
         
         return Response(apiResponse(200, "Tokens generate successfully", tokens),
@@ -128,8 +135,10 @@ class RefreshedAccessTokens(APIView):
     
 class ResetPassword(APIView):
     def post(self, request):
-        oldPassword = request.data.get('old_passwod')
+        oldPassword = request.data.get('old_password')
         newPassword = request.data.get('new_password')
+        
+        # print("oldPassword: %s newPassword: %s" % (oldPassword, newPassword))
         
         user = User.getUserById(request.user.id)
         
@@ -168,3 +177,19 @@ class UpdateAvatar(APIView):
         
         return Response(apiResponse(200, 'upload avatar successfully', data), status=status.HTTP_200_OK)
     
+
+class UserProfile(APIView):
+    def get(self, request):
+        user = User.getUserById(request.user.id)
+        if user is None:
+            return Response(apiError(401, 'User does not exist'), status=status.HTTP_401_UNAUTHORIZED)
+        
+        videos = Video.getAllVideosOfUser(user.id)
+        print('videos list', videos)
+        subscriptionAndSubscriber = Subscription.getSubscriptionAndSubcriber(user.id)
+        
+        response = user.to_dict()
+        response['videos'] = videos
+        response['subscriptionAndSubscriber'] = subscriptionAndSubscriber
+        
+        return Response(apiResponse(200, 'get user profile successfully', response), status=status.HTTP_200_OK)
