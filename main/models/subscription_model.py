@@ -55,9 +55,41 @@ class Subscription(models.Model):
         }
         
     @classmethod
-    def getSubscribers(self, user_id):
+    def getSubscribers(self, userId):
+        subscribers = []
+        subscriberObjects = Subscription.objects.filter(channel_id = userId)
+        for subscriber in subscriberObjects:
+            # user = User.getUserById(subcriber.subscriber_id)
+            subcriberDetail = {
+                'id': subscriber.subscriber.id,
+                'username': '@' + subscriber.subscriberusername,
+                'avatar': subscriber.subscriberavatar
+            }
+            subscribers.append(subcriberDetail)
+            
+        return {
+            'subscribers_count': len(subscriberObjects),
+            'subscribers': subscribers,
+        }
         
+    @classmethod
+    def getSubscriberCount(self, userId):
+        return Subscription.objects.filter(channel_id = userId).count()
     
     @classmethod
-    def getSubscriptions(self, user_id):
-        pass
+    def getSubscriptions(self, userId):
+        subscriptions = []
+        subscriptionObjects = Subscription.objects.filter(subscriber_id = userId)
+        for subscription in subscriptionObjects:
+            # user = User.getUserById(subscription.channel_id)
+            subscriptionDetail = {
+                'id': subscription.channel.id,
+                'username': '@' + subscription.channel.username,
+                'avatar': subscription.channel.avatar
+            }
+            subscriptions.append(subscriptionDetail)
+            
+        return {
+           'subscriptions_count': len(subscriptionObjects),
+           'subscriptions': subscriptions
+        }

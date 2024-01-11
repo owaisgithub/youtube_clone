@@ -65,8 +65,8 @@ class User(models.Model):
             # 'avatar_id': self.avatar_id,
             # 'password': self.password,
             # 'refreshToken': self.refreshToken,
-            'createdAt': self.createdAt,
-            'updatedAt': self.updatedAt
+            'createdAt': self.createdAt.strftime('%Y-%m-%d %H:%M:%S'),
+            'updatedAt': self.updatedAt.strftime('%Y-%m-%d %H:%M:%S')
         }
         
     def generateAccessToken(self):

@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import status
 
 from main.models.video_model import Video 
+from main.models.subscription_model import Subscription
 from main.utils.cloudinary import uploadOnCloudinry, deleteFromCloudinry
 from main.utils.api_response import apiResponse
 from main.utils.api_error import apiError
@@ -13,10 +14,12 @@ class VideoView(APIView):
     
     def get(self, request, videoId=None):
         video = Video.getVideoById(videoId)
+        data = video.to_dict()
+        data["subscribers"] = Subscription.getSubscriberCount(video.user.id)
         if video is None:
             return Response(apiError(404, 'Video does not exist'), status=status.HTTP_404_NOT_FOUND)
         
-        return Response(apiResponse(200, 'get video successfully', video.to_dict()), status=status.HTTP_200_OK)
+        return Response(apiResponse(200, 'get video successfully', data), status=status.HTTP_200_OK)
     
     def post(self, request):
         video = request.data.get('video')
@@ -38,9 +41,9 @@ class VideoView(APIView):
         data = {
             'title': request.data.get('title'),
             'description': request.data.get('description'),
-            'video': videoResponse.get('url'),
+            'video_url': videoResponse.get('url'),
             'video_id': videoResponse.get('public_id'),
-            'thumbnail': thumbnailResponse.get('url'),
+            'thumbnail_url': thumbnailResponse.get('url'),
             'thumbnail_id': thumbnailResponse.get('public_id'),
             'duration': videoResponse.get('duration'),
             'userId': request.user.id
@@ -123,3 +126,14 @@ class VideoView(APIView):
         videoObject.delete()
         
         return Response(apiResponse(200, "video remove successfully"), status=status.HTTP_200_OK)
+    
+    
+class AllVideosView(APIView):
+    permission_classes = (AllowAny,)
+    
+    def get(self, request):
+        videos = Video.getAllVideos()
+        if videos is None:
+            return Response(apiError(404, 'Videos not found'), status=status.HTTP_404_NOT_FOUND)
+        
+        return Response(apiResponse(200, 'get videos successfully', videos), status=status.HTTP_200_OK)

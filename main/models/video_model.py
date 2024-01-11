@@ -6,11 +6,11 @@ from .user_model import User
 class Video(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
-    video = models.CharField(max_length=500)
+    video_url = models.CharField(max_length=500)
     video_id = models.CharField(max_length=100)
-    thumbnail = models.CharField(max_length=500)
+    thumbnail_url = models.CharField(max_length=500)
     thumbnail_id = models.CharField(max_length=100)
-    duration = models.DecimalField(max_digits=8, decimal_places=3)
+    duration = models.IntegerField()
     views = models.IntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     createAt = models.DateTimeField(auto_now_add=True)
@@ -31,9 +31,9 @@ class Video(models.Model):
         try:
             video = Video.objects.create(title = data.get('title'),
                                          description = data.get('description'),
-                                         video = data.get('video'),
+                                         video_url = data.get('video_url'),
                                          video_id = data.get('video_id'),
-                                         thumbnail = data.get('thumbnail'),
+                                         thumbnail_url = data.get('thumbnail_url'),
                                          thumbnail_id = data.get('thumbnail_id'),
                                          duration = data.get('duration'),
                                          user_id = data.get('userId')
@@ -43,9 +43,17 @@ class Video(models.Model):
         except Exception as e:
             return None
         
+    # @classmethod
+    # def getAllVideoOfUser(self, userId):
+    #     return Video.objects.filter(user_id = userId)
+    
     @classmethod
-    def getAllVideoOfUser(self, userId):
-        return Video.objects.filter(user_id = userId)
+    def getAllVideos(self):
+        videos = Video.objects.all()
+        videosList = [
+            video.to_dict() for video in videos
+        ]
+        return videosList
     
     
     @classmethod
@@ -62,12 +70,17 @@ class Video(models.Model):
             'id': self.id,
             'title': self.title,
             'description': self.description,
-            'video': self.video,
-            'thumbnail': self.thumbnail,
+            'videoUrl': self.video_url,
+            'thumbnailUrl': self.thumbnail_url,
             'duration': self.duration,
             'views': self.views,
-            'userId': self.user_id,
-            'createdAt': self.createAt,
-            'updatedAt': self.updateAt
+            'user' : {
+                'userId': self.user.id,
+                'username': '@' + self.user.username,
+                'avatar': self.user.avatar,
+            },
+            
+            'createdAt': self.createAt.strftime('%Y-%m-%d %H:%M:%S'),
+            'updatedAt': self.updateAt.strftime('%Y-%m-%d %H:%M:%S')
         }
     

@@ -21,7 +21,7 @@ class UserView(APIView):
     
     def post(self, request):
         data = request.data
-        
+        print(data.get('avatar'))
         if data.get('fullname') is None or data.get('email') is None or data.get('username') is None or data.get('password') is None or data.get('avatar') is None:
             return Response(apiError(400, "All fields are required!"),
                             status = status.HTTP_400_BAD_REQUEST)
@@ -70,15 +70,23 @@ class LoginView(APIView):
         user.refreshToken = tokens.get('refreshToken')
         user.save()
         
+        data = {
+            'tokens' : tokens,
+            'user' : user.to_dict()
+        }
+        
         return Response(apiResponse(200,
                                     "Logged in successfully",
-                                    tokens),
+                                    data),
                         status = status.HTTP_200_OK)
 
 class LogoutView(APIView):
     def post(self, request):
         print(request.META.get('HTTP_AUTHORIZATION'))
         user = User.getUserById(request.user.id)
+        if user is None:
+            return Response(apiError(401, "Invalid Credentials"),
+                            status=status.HTTP_401_UNAUTHORIZED)
         user.refreshToken = ''
         user.save()
         
@@ -186,10 +194,13 @@ class UserProfile(APIView):
         
         videos = Video.getAllVideosOfUser(user.id)
         print('videos list', videos)
-        subscriptionAndSubscriber = Subscription.getSubscriptionAndSubcriber(user.id)
+        # subscriptionAndSubscriber = Subscription.getSubscriptionAndSubcriber(user.id)
+        subscribers = Subscription.getSubscribers(user.id)
+        subscriptions = Subscription.getSubscriptions(user.id)
         
         response = user.to_dict()
         response['videos'] = videos
-        response['subscriptionAndSubscriber'] = subscriptionAndSubscriber
+        response['subscribers'] = subscribers
+        response['subscriptions'] = subscriptions
         
         return Response(apiResponse(200, 'get user profile successfully', response), status=status.HTTP_200_OK)
