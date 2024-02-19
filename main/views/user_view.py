@@ -21,7 +21,8 @@ class UserView(APIView):
     
     def post(self, request):
         data = request.data
-        print(data.get('avatar'))
+        print(data.get('fullname'))
+        print("User avatar", data.get('avatar'))
         if data.get('fullname') is None or data.get('email') is None or data.get('username') is None or data.get('password') is None or data.get('avatar') is None:
             return Response(apiError(400, "All fields are required!"),
                             status = status.HTTP_400_BAD_REQUEST)
@@ -34,7 +35,7 @@ class UserView(APIView):
             return Response(apiError(400, "This username already exist"),
                             status = status.HTTP_400_BAD_REQUEST)
         
-        res = uploadOnCloudinry(data.get('avatar'))
+        res = uploadOnCloudinry(data.get('avatar'), 'user_avatar')
         print(res)
         if res is None:
             return Response(apiError(500,
@@ -63,16 +64,18 @@ class LoginView(APIView):
                             status=status.HTTP_401_UNAUTHORIZED)
             
             
-        tokens = {
-            'accessToken': user.generateAccessToken(),
-            'refreshToken': user.generateRefreshToken()
-        }
-        user.refreshToken = tokens.get('refreshToken')
+        accessToken, tokenExpiry = user.generateAccessToken()
+        refreshToken = user.generateRefreshToken()
+
+        user.refreshToken = refreshToken
         user.save()
         
         data = {
-            'tokens' : tokens,
-            'user' : user.to_dict()
+            'accessToken' : accessToken,
+            'refreshToken' : refreshToken,
+            'tokenExpiry': tokenExpiry,
+            'user' : user.username,
+            'userAvatar' : user.avatar
         }
         
         return Response(apiResponse(200,
@@ -126,9 +129,11 @@ class RefreshedAccessTokens(APIView):
             if user.refreshToken != refreshToken:
                 return Response(apiError(401, "Refresh token is invalid"), status=status.HTTP_401_UNAUTHORIZED)
                 # raise AuthenticationFailed('Refresh token is invalid')
+            (accessToken, tokenExpiry) = user.generateAccessToken()
             tokens = {
-                'accessToken': user.generateAccessToken(),
-                'refreshToken': user.generateRefreshToken()
+                'accessToken': accessToken,
+                'refreshToken': user.generateRefreshToken(),
+                'tokenExpiry': tokenExpiry
             }
             user.refreshToken = tokens['refreshToken']
             user.save()
@@ -199,8 +204,17 @@ class UserProfile(APIView):
         subscriptions = Subscription.getSubscriptions(user.id)
         
         response = user.to_dict()
-        response['videos'] = videos
-        response['subscribers'] = subscribers
-        response['subscriptions'] = subscriptions
+        # response['videos'] = videos
+        # response['subscribers'] = subscribers
+        # response['subscriptions'] = subscriptions
         
         return Response(apiResponse(200, 'get user profile successfully', response), status=status.HTTP_200_OK)
+
+
+class GetLoggedInUserAvatar(APIView):
+    def get(self, request):
+        userId = request.user.id
+        user = User.getUserById(userId)
+        if user is None:
+            return Response(apiError(401, 'User does not exist'), status=status.HTTP_401_UNAUTHORIZED)
+        return Response(apiResponse(200, "OK", user.avatar), status=status.HTTP_200_OK)

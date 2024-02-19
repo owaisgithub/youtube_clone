@@ -4,25 +4,29 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import { Provider } from 'react-redux'
 import store from './app/store'
 
-import App from './App.jsx'
-import { Header, About, VideoPlay, Register, Login } from './components/index.js'
-
-import 'bootstrap/dist/css/bootstrap.min.css'
+// import App from './App.jsx'
+import { Header, Home, About, Subscription, Video, Login, Register, VideoUpload } from './components/index.js'
+import './index.css';
+import '@fortawesome/fontawesome-free/css/all.css'
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <Router>
-      <Header />
-      <div className='m-top-5'>
-        <Routes>
-          <Route path='/' Component={App} />
-          <Route path='/about' Component={About} />
-          <Route path='/video/:id' Component={VideoPlay} />
-          <Route path='/login' Component={Login} />
-          <Route path='/register' Component={Register} />
-        </Routes>
-      </div>
-    </Router>
+    <div className='bg-gray-700'>
+      <Router>
+        <Header />
+        <div className='pt-12'>
+          <Routes>
+            <Route path='/' Component={Home} />
+            <Route path='/video-play/:channel/:videoId' Component={Video} />
+            <Route path='/upload-video' Component={VideoUpload} />
+            <Route path='/login' Component={Login} />
+            <Route path='/register' Component={Register} />
+            <Route path='/about' Component={About} />
+            <Route path='/subscription' Component={Subscription} />
+          </Routes>
+        </div>
+      </Router>
+    </div>
   </Provider>,
 )

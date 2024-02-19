@@ -1,43 +1,33 @@
-import { Nav } from 'react-bootstrap'
-import '../../static/css/sidebar.css'
+import React from 'react'
+import { Link } from 'react-router-dom'
 
-
-const Sidebar = () => {
-    return (
-        <Nav className="col-md-2 bg-white sidebar">
-          <div className="sidebar-sticky">
-            <ul className='side-bar'>
-              <li className='side-bar-item'>Home</li>
-              <li className='side-bar-item'>Subscriptions</li>
-              <hr />
-              <li className='side-bar-item'>Your channel</li>
-              <li className='side-bar-item'>Your videos</li>
-            </ul>
-          </div>
-      </Nav>
-        // <div className="side-bar">
-        //     <div className='box'>
-        //         <div className='side-bar-item'>
-        //             <span>Home</span>
-        //         </div>
-        //         <div className='side-bar-item'>
-        //             <span>Subscriptions</span>
-        //         </div>    
-        //     </div>
-        //     <hr />
-
-        //     <div className='box'>
-        //         <p id='you'>You</p>
-        //         <div className='side-bar-item'>
-        //             <span>Your channel</span>
-        //         </div>
-        //         <div className='side-bar-item'>
-        //             <span>Your videos</span>
-        //         </div>    
-        //     </div>  
-            
-        // </div>
-    )
+export default function Sidebar({currentPath}) {
+  return (
+    <aside className="w-1/6 p-4 fixed h-full overflow-y-auto text-white">
+        <ul>
+            {currentPath === '/' ? (
+                <li className='bg-gray-600 hover:bg-gray-500 rounded-md py-2'>
+                    <Link className='px-3 font-semibold' to="/">Home</Link>
+                </li>
+            ) : (
+                <li className='hover:bg-gray-600 rounded-md py-2'>
+                    <Link className='px-3 font-semibold' to="/">Home</Link>
+                </li>
+            )}
+            {currentPath === '/subscription' ? (
+                <li className='bg-gray-600 hover:bg-gray-500 rounded-md py-2'>
+                    <Link className='px-3 font-semibold' to="/subscription">Subscriptions</Link>
+                </li>
+            ) : (
+                <li className='hover:bg-gray-600 rounded-md py-2'>
+                    <Link className='px-3 font-semibold' to="/subscription">Subscriptions</Link>
+                </li>
+            )}
+            <hr className='my-2 border-gray-400' />
+            <li className='hover:bg-gray-600 rounded-md py-2'>
+                <Link className='px-3 font-semibold'>Your channel</Link>
+            </li>
+        </ul>
+    </aside>
+  )
 }
-
-export default Sidebar

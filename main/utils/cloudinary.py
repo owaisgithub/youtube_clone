@@ -1,10 +1,7 @@
-from dotenv import load_dotenv
 import cloudinary.uploader
 import cloudinary.api
 import cloudinary
 import os
-
-load_dotenv()
 
 cloudinary.config(
     cloud_name=os.getenv("CLOUD_NAME"),
@@ -13,11 +10,11 @@ cloudinary.config(
     secure=True,
 )
 
-def uploadOnCloudinry(file):
+def uploadOnCloudinry(file, folder_name):
     try:
         result = cloudinary.uploader.upload(
             file,
-            folder = "django_avatar",
+            folder = folder_name,
             resource_type = "auto"
         )
         return result

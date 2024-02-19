@@ -1,101 +1,148 @@
 import { useState } from "react";
-import axios from "axios";
+import authService from "../../backendapi/userapi";
 
 
 const Register = () => {
-
-    const [userData, setUserData] = useState({
+    const [msg, setMsg] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [result, setResult] = useState(false)
+    const initialState = {
         fullname: "",
         username: "",
         email: "",
-        avatar: "",
-        password: "",
-    })
+        password: ""
+    }
+    const [userData, setUserData] = useState(initialState)
 
-    const register = async (e) => {
-        e.preventDefault();
-        console.log(userData)
+    const [file, setFile] = useState(null)
+
+    const handleChange = (e) => {
+        const {name, value} = e.target
+        setUserData({
+         ...userData,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setLoading(true)
+        console.log("File: " + file)
         const formData = new FormData()
         formData.append('fullname', userData.fullname)
         formData.append('username', userData.username)
         formData.append('email', userData.email)
-        formData.append('avatar', userData.avatar)
+        formData.append('avatar', file)
         formData.append('password', userData.password)
         console.log("Form Data: " + formData)
 
-        const response = await axios.post('http://localhost:8000/api/v1/users/create-user', formData)
-        const data = await response.data
+        const data = await authService.register(formData)
         console.log(data)
-    }
-
-    const inputChange = (e) => {
-        const {name, value} = e.target
-        setUserData({
-         ...userData,
-            [name]: value
-        })
+        setResult(data.success)
+        setMsg(data.message)
+        setUserData(initialState)
+        setLoading(false)
     }
 
     return (
-        <form className="form-container" onSubmit={register}>
-            <div className="mb-3 mt-3">
-                <label for="email" className="form-label">Fullname:</label>
-                <input 
-                    type="text" 
-                    className="form-control" 
-                    placeholder="Enter Fullname"
-                    name="fullname"
-                    onChange={inputChange}
-                />
-            </div>
-            <div className="mb-3">
-                <label for="pwd" className="form-label">Username:</label>
-                <input
-                    type="text" 
-                    className="form-control" 
-                    placeholder="Enter Username" 
-                    name="username"
-                    onChange={inputChange}  
-                />
-            </div>
-            <div className="mb-3">
-                <label for="pwd" className="form-label">Email:</label>
-                <input 
-                    type="email" 
-                    className="form-control" 
-                    placeholder="Enter Email" 
-                    name="email" 
-                    onChange={inputChange}
-                />
-            </div>
-            <div className="mb-3">
-                <label for="pwd" className="form-label">Avatar:</label>
-                <input 
-                    type="file" 
-                    className="form-control" 
-                    placeholder="Enter Password" 
-                    name="avatar"
-                    onChange={(e) => {
-                        setUserData({
-                         ...userData,
-                            avatar: e.target.files[0]
-                        })
-                    }}
-                />
-            </div>
-            <div className="mb-3">
-                <label for="pwd" className="form-label">Password:</label>
-                <input 
-                    type="password" 
-                    className="form-control" 
-                    placeholder="Enter password" 
-                    name="password" 
-                    onChange={inputChange}
-                />
-            </div>
-            <button type="submit" className="btn btn-primary">Submit</button>
-        </form>
-
+        <>
+        {loading && 
+            <div class="flex justify-center items-center mt-8 w-1/2 mx-auto py-3 bg-white rounded-3xl">
+                <div class="w-12 h-12 border-t-4 border-green-500 border-solid rounded-full animate-spin mx-auto"></div>
+          </div>
+          
+        }
+        <div className="flex justify-center items-center h-screen">
+            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                {result && (
+                    <div className="text-green-800 text-lg font-semibold py-1 px-20 bg-green-100 my-2 rounded-lg justify-center">
+                        <p className="">{msg}</p>
+                    </div>
+                )}
+                <div className="mb-2">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="fullname">
+                    Full Name
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="fullname"
+                        type="text"
+                        placeholder="Full Name"
+                        name="fullname"
+                        value={userData.fullname}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-2">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
+                    Username
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="username"
+                        type="text"
+                        placeholder="Username"
+                        name="username"
+                        value={userData.username}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-2">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                    Email
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="email"
+                        type="email"
+                        placeholder="Email"
+                        name="email"
+                        value={userData.email}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-2">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+                    Password
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                        id="password"
+                        type="password"
+                        placeholder="Password"
+                        name="password"
+                        value={userData.password}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div className="mb-2">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="avatar">
+                    Avatar
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                        id="avatar"
+                        type="file"
+                        name="avatar"
+                        onChange={(e) => setFile(e.target.files[0])}
+                        required
+                    />
+                </div>
+                <div className="flex items-center justify-between">
+                    <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    type="submit"
+                    >
+                    Register
+                    </button>
+                </div>
+            </form>
+        </div>
+        </>
     )
 }
 

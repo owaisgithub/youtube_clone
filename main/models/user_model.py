@@ -60,7 +60,7 @@ class User(models.Model):
         return {
             'fullname': self.fullname,
             'email': self.email,
-            'username': self.username,
+            'username': '@' + self.username,
             'avatar': self.avatar,
             # 'avatar_id': self.avatar_id,
             # 'password': self.password,
@@ -71,17 +71,18 @@ class User(models.Model):
         
     def generateAccessToken(self):
         print(os.getenv('ACCESS_TOKEN_EXPIRY'))
+        tokenExpiry = datetime.utcnow() + timedelta(days=int(os.getenv('ACCESS_TOKEN_EXPIRY')))
         accessPayload = {
             'id': self.id,
             'email': self.email,
             'username': self.username,
-            'exp': datetime.utcnow() + timedelta(days=int(os.getenv('ACCESS_TOKEN_EXPIRY'))),
+            'exp': tokenExpiry,
             'iat': datetime.utcnow()
         }
         tokenSecretKey = os.getenv('TOKEN_SECRET')
         accessToken = jwt.encode(accessPayload, tokenSecretKey, algorithm='HS256') # generate a token
-        
-        return accessToken
+        print(type(accessToken))
+        return (accessToken, tokenExpiry)
     
     def generateRefreshToken(self):
         refreshPayload = {

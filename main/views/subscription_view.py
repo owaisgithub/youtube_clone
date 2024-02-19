@@ -11,8 +11,18 @@ from main.utils.api_error import apiError
 
 
 class SubscriptionView(APIView):
-    def post(self, request):
-        channelId = request.data.get('channelId')
+    def get(self, request, channelId):
+        subscribers = Subscription.getSubscriberCount(channelId)
+        isSubscribed = Subscription.isSubscribed(channelId, request.user.id)
+        data = {
+            'isSubscribed': isSubscribed,
+            'subscribers': subscribers
+        }
+        print(subscribers)
+        return Response(apiResponse(200, "Subscribers fetch successfully", data), status=status.HTTP_200_OK)
+
+    def post(self, request, channelId):
+        # channelId = request.data.get('channelId')
         subscriberId = request.user.id
         
         if channelId is None or subscriberId is None:
@@ -23,3 +33,22 @@ class SubscriptionView(APIView):
             return Response(apiError(500, 'internal server error'), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response(apiResponse(200, 'channel subscribed'), status=status.HTTP_200_OK)
+
+class UnsubscribeChannel(APIView):
+    def post(self, request, channelId):
+        # channelId = request.data.get('channelId')
+        subscriberId = request.user.id
+        
+        if channelId is None or subscriberId is None:
+            return Response(apiError(400, 'bad request'), status=status.HTTP_400_BAD_REQUEST)
+        
+        unsubscribe = Subscription.unsubscribeChannel(channelId, subscriberId)
+        if unsubscribe is False:
+            return Response(apiError(500, 'internal server error'), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+        return Response(apiResponse(200, 'channel unsubscribed'), status=status.HTTP_200_OK)
+
+class GetChannelsSubscribedByUser(APIView):
+    def get(self, request):
+        subscriptions = Subscription.getSubscriptions(request.user.id)
+        return Response(apiResponse(200, "OK", subscriptions), status=status.HTTP_200_OK)

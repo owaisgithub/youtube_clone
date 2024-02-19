@@ -41,6 +41,7 @@ class Video(models.Model):
             video.save()
             return video
         except Exception as e:
+            print("Exception Raise: ", e)
             return None
         
     # @classmethod
@@ -63,7 +64,6 @@ class Video(models.Model):
             video.to_dict() for video in videos
         ]
         return videosList
-    
         
     def to_dict(self):
         return {

@@ -73,8 +73,26 @@ class Subscription(models.Model):
         }
         
     @classmethod
-    def getSubscriberCount(self, userId):
-        return Subscription.objects.filter(channel_id = userId).count()
+    def getSubscriberCount(self, channelId):
+        return Subscription.objects.filter(channel_id = channelId).count()
+
+    @classmethod
+    def isSubscribed(self, channelId, userId):
+        try:
+            isSubscribed = Subscription.objects.get(channel_id = channelId, subscriber_id = userId)
+            return True
+        except Exception as e:
+            return False
+        # return Subscription.objects.get(channel_id = channelId, subscriber_id = userId)
+    
+    @classmethod
+    def unsubscribeChannel(self, channelId, userId):
+        try:
+            unsubscribe = Subscription.objects.get(channel_id = channelId, subscriber_id = userId)
+            unsubscribe.delete()
+            return True
+        except Exception as e:
+            return False
     
     @classmethod
     def getSubscriptions(self, userId):
@@ -85,7 +103,8 @@ class Subscription(models.Model):
             subscriptionDetail = {
                 'id': subscription.channel.id,
                 'username': '@' + subscription.channel.username,
-                'avatar': subscription.channel.avatar
+                'avatar': subscription.channel.avatar,
+                'createdAt': subscription.channel.createdAt
             }
             subscriptions.append(subscriptionDetail)
             

@@ -8,11 +8,6 @@ import os
 
 class JWTAuthentication:
     def authenticate(self, request):
-        # print(request.META.get('HTTP_AUTHORIZATION'))
-        # if request.path == '/api/v1/users/refreshed-tokens':
-        #     print("path is correct")
-        #     return None
-        
         token = self.get_token_from_request(request)
         print(token)
         if token is None:
@@ -48,7 +43,7 @@ class JWTAuthentication:
         #     return None
         
         user.is_authenticated = True
-
+        print(user)
         return (user, None)
 
     def get_token_from_request(self, request):

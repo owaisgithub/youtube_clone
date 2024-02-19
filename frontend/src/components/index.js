@@ -1,17 +1,26 @@
 import Header from "./Header/Header";
 import About from "./About/About";
-import VideoPlay from "./Videos/VideoPlay";
-import DisplayVideos from "./Videos/DisplayVideos"
+import Home from "./Home/Home";
+import Card from "./Card/Card";
 import Sidebar from "./Sidebar/Sidebar";
+import VideoPlayer from "./Videos/VideoPlayer";
+import Video from "./Videos/Video";
+import VideoUpload from "./Videos/VideoUpload";
+import Subscription from "./Home/Subscription";
+
 import Register from "./Signup/Register";
 import Login from "./Signup/Login";
 
 export {
     Header,
+    Home,
     About,
-    VideoPlay,
-    DisplayVideos,
+    Card,
+    VideoPlayer,
+    Video,
     Sidebar,
     Register,
     Login,
+    VideoUpload,
+    Subscription,
 }

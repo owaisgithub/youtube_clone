@@ -3,6 +3,9 @@ from django.db import models
 from .user_model import User
 from.video_model import Video
 
+import pytz
+ist_timezone = pytz.timezone('Asia/Kolkata')
+
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
@@ -18,11 +21,12 @@ class Comment(models.Model):
             'id': self.id,
             'user': {
                 'userId': self.user.id,
-                'avatarUrl': self.user.avatar
+                'avatarUrl': self.user.avatar,
+                'username': self.user.username,
             },
             'videoId': self.video.id,
             'comment': self.comment,
-            'createdAt': self.createdAt.strftime('%Y-%m-%d %H:%M:%S')
+            'createdAt': self.createdAt.astimezone(ist_timezone)
         }
         
     @classmethod
@@ -36,7 +40,7 @@ class Comment(models.Model):
     
     @classmethod
     def comments(cls, videoId):
-        comments = Comment.objects.filter(video_id=videoId)
+        comments = Comment.objects.filter(video_id=videoId).order_by('-createdAt')
         commentsList = [
             comment.to_dict() for comment in comments
         ]

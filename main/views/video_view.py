@@ -22,22 +22,28 @@ class VideoView(APIView):
         return Response(apiResponse(200, 'get video successfully', data), status=status.HTTP_200_OK)
     
     def post(self, request):
+        print(request.user)
         video = request.data.get('video')
         thumbnail = request.data.get('thumbnail')
+
+        print(request.data.get('title'))
+        print(request.data.get('description'))
         
         print(video)
-        videoResponse = uploadOnCloudinry(video)
-        print(videoResponse)
+        videoResponse = uploadOnCloudinry(video, 'videos_upload')
+        print("Video Response: ", videoResponse)
         if videoResponse is None:
             print("This is video response error")
             return Response(apiError(500, 'internal server error'), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        thumbnailResponse = uploadOnCloudinry(thumbnail)
+        thumbnailResponse = uploadOnCloudinry(thumbnail, 'thumbnail_upload')
+        print("Thumbnail Response: ", thumbnailResponse)
         if thumbnailResponse is None:
             print('this is thumbnail response error')
             deleteFromCloudinry(videoResponse.get('public_id'))
             return Response(apiError(500, 'internal server error'), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+        print("Declare the data variables")
         data = {
             'title': request.data.get('title'),
             'description': request.data.get('description'),
@@ -46,19 +52,21 @@ class VideoView(APIView):
             'thumbnail_url': thumbnailResponse.get('url'),
             'thumbnail_id': thumbnailResponse.get('public_id'),
             'duration': videoResponse.get('duration'),
+            # 'duration': 120,
             'userId': request.user.id
         }
         
-        print(data)
+        # print("Video Data: ", data)
         
         videoObject = Video.createVideo(data)
-        print(videoObject)
+        # print(videoObject)
         if videoObject is None:
             return Response(apiError(500, 'internal server error'), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         return Response(apiResponse(201, 
                                     "video upload successfully", 
-                                    videoObject.to_dict()), 
+                                    videoObject.to_dict()
+                        ), 
                         status=status.HTTP_201_CREATED)
         
     def put(self, request, videoId):
@@ -137,3 +145,21 @@ class AllVideosView(APIView):
             return Response(apiError(404, 'Videos not found'), status=status.HTTP_404_NOT_FOUND)
         
         return Response(apiResponse(200, 'get videos successfully', videos), status=status.HTTP_200_OK)
+
+class ViewsOfVideo(APIView):
+    def get(self, request, videoId):
+        video = Video.getVideoById(videoId)
+        if video is None:
+            return Response(apiError(404, 'Video not found'), status=status.HTTP_404_NOT_FOUND)
+        
+        return Response(apiResponse(200, 'get views successfully', video.views), status=status.HTTP_200_OK)
+
+    def post(self, request, videoId):
+        video = Video.getVideoById(videoId)
+        if video is None:
+            return Response(apiError(404, 'Video not found'), status=status.HTTP_404_NOT_FOUND)
+        
+        video.views = video.views + 1
+        video.save()
+        
+        return Response(apiResponse(200, 'post views successfully', video.views), status=status.HTTP_200_OK)

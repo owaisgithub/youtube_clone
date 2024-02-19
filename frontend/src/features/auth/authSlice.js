@@ -2,8 +2,9 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     isAuthenticated: false,
-    user: null,
-    tokens: null
+    // user: null,
+    // accessToken: null,
+    // refreshToken: null
 };
 
 export const authSlice = createSlice({
@@ -12,19 +13,23 @@ export const authSlice = createSlice({
     reducers: {
         login: (state, action) => {
             state.isAuthenticated = true;
-            state.user = action.payload.user;
-            state.tokens = action.payload.tokens;
-            localStorage.setItem('accessToken', JSON.stringify(action.payload.tokens.accessToken));
-            localStorage.setItem('refreshToken', JSON.stringify(action.payload.tokens.refreshToken));
-            localStorage.setItem('user', JSON.stringify(action.payload.user));
+            const { accessToken, refreshToken, user, tokenExpiry, userAvatar } = action.payload
+            localStorage.setItem('accessToken', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            localStorage.setItem('user', user);
+            localStorage.setItem('tokenExpiry', tokenExpiry);
+            localStorage.setItem('userAvatar', userAvatar);
         },
         logout: (state) => {
             state.isAuthenticated = false;
             state.user = null;
-            state.tokens = null;
+            state.accessToken = null;
+            state.refreshToken = null;
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
+            localStorage.removeItem('tokenExpiry');
+            localStorage.removeItem('userAvatar');
         }
 
         
