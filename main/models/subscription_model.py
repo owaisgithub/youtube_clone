@@ -1,11 +1,12 @@
 from django.db import models
 
 from .user_model import User
+from .channel_model import Channel
 
 
 class Subscription(models.Model):
-    subscriber = models.ForeignKey(User, on_delete=models.CASCADE, related_name='subscriber')
-    channel = models.ForeignKey(User, on_delete=models.CASCADE, related_name='channel')
+    subscriber = models.ForeignKey(User, on_delete=models.CASCADE, db_column="subscriber_id",  related_name='subscriber')
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, db_column="channel_id", related_name='channels')
     createAt = models.DateTimeField(auto_now_add=True)
     updateAt = models.DateTimeField(auto_now=True)
     
@@ -31,7 +32,7 @@ class Subscription(models.Model):
         for subcriber in subscriberObjects:
             user = User.getUserById(subcriber.subscriber_id)
             subcriberDetail = {
-                'id': user.id,
+                'id': user._id,
                 'username': '@' + user.username,
                 'avatar': user.avatar
             }
@@ -40,7 +41,7 @@ class Subscription(models.Model):
         for subscription in subscriptionObjects:
             user = User.getUserById(subscription.channel_id)
             subscriptionDetail = {
-                'id': user.id,
+                'id': user._id,
                 'username': '@' + user.username,
                 'avatar': user.avatar
             }
@@ -55,15 +56,15 @@ class Subscription(models.Model):
         }
         
     @classmethod
-    def getSubscribers(self, userId):
+    def getSubscribers(self, channelId):
         subscribers = []
-        subscriberObjects = Subscription.objects.filter(channel_id = userId)
+        subscriberObjects = Subscription.objects.filter(channel_id = channelId)
         for subscriber in subscriberObjects:
             # user = User.getUserById(subcriber.subscriber_id)
             subcriberDetail = {
                 'id': subscriber.subscriber.id,
-                'username': '@' + subscriber.subscriberusername,
-                'avatar': subscriber.subscriberavatar
+                'username': '@' + subscriber.subscriber.username,
+                'avatar': subscriber.subscriber.avatar
             }
             subscribers.append(subcriberDetail)
             
@@ -101,10 +102,11 @@ class Subscription(models.Model):
         for subscription in subscriptionObjects:
             # user = User.getUserById(subscription.channel_id)
             subscriptionDetail = {
-                'id': subscription.channel.id,
-                'username': '@' + subscription.channel.username,
-                'avatar': subscription.channel.avatar,
-                'createdAt': subscription.channel.createdAt
+                'id': subscription.channel._id,
+                'channelName': subscription.channel.channelName,
+                'channelHandle': subscription.channel.channelHandle,
+                'channelAvatarUrl': subscription.channel.channelAvatarUrl,
+                'createdAt': subscription.channel.createAt
             }
             subscriptions.append(subscriptionDetail)
             

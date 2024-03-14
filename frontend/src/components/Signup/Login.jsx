@@ -39,8 +39,8 @@ const Login = () => {
   return (
     <>
     {loading && 
-      <div class="flex justify-center items-center mt-8 w-1/2 mx-auto py-3 bg-white rounded-3xl">
-        <div class="w-12 h-12 border-t-4 border-green-500 border-solid rounded-full animate-spin mx-auto"></div>
+      <div className="flex justify-center items-center mt-8 w-1/2 mx-auto py-3 bg-white rounded-3xl">
+        <div className="w-12 h-12 border-t-4 border-green-500 border-solid rounded-full animate-spin mx-auto"></div>
       </div>
     }
     <div className="flex justify-center h-screen my-16">

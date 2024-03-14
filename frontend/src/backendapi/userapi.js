@@ -41,12 +41,12 @@ class AuthService {
         }).then(res => res.json());
     }
 
-    async getTokens(refreshToken) {
+    async getTokens() {
         return fetch('http://localhost:8000/api/v1/users/refreshed-tokens',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${refreshToken}`
+                'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`
             }
         }).then(res => res.json());
     }

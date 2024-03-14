@@ -9,12 +9,12 @@ import os
 class JWTAuthentication:
     def authenticate(self, request):
         token = self.get_token_from_request(request)
-        print(token)
+        # print(token)
         if token is None:
             return None
         
-        print(type(request.path))
-        print("authjwt is testing every request")
+        # print(type(request.path))
+        # print("authjwt is testing every request")
         # if self.is_token_blacklisted(token):
         #     # print("token is blacklist")
         #     raise AuthenticationFailed('Token is invalid')
@@ -22,7 +22,7 @@ class JWTAuthentication:
         try:
             tokenSecretKey = os.getenv('TOKEN_SECRET')
             payload = jwt.decode(token, tokenSecretKey, algorithms=['HS256']) ## decode the token
-            print(payload)
+            # print(payload)
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('Token has expired', 401)
         except jwt.InvalidTokenError as e:
@@ -43,7 +43,7 @@ class JWTAuthentication:
         #     return None
         
         user.is_authenticated = True
-        print(user)
+        # print(user)
         return (user, None)
 
     def get_token_from_request(self, request):
@@ -53,5 +53,5 @@ class JWTAuthentication:
         return None
     
     def authenticate_header(self, request):
-        print("authenticate header")
+        # print("authenticate header")
         pass

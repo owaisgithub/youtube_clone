@@ -48,36 +48,6 @@ export class VideoService {
         }).then(res => res.json());
     }
 
-    async getSubscribers(channelId) {
-        return fetch(`http://localhost:8000/api/v1/videos/get-subscribers/${channelId}`,{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
-    }
-
-    async subscribeChannel(channelId) {
-        return fetch(`http://localhost:8000/api/v1/videos/subscribe-channel/${channelId}`,{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
-    }
-
-    async unsubscribeChannel(channelId) {
-        return fetch(`http://localhost:8000/api/v1/videos/unsubscribe-channel/${channelId}`,{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
-    }
-
     async getComments(videoId) {
         return fetch(`http://localhost:8000/api/v1/videos/get-comments/${videoId}`,{
             method: 'GET',
@@ -101,7 +71,7 @@ export class VideoService {
         }).then(res => res.json());
     }
 
-    async videoLikes(videoId) {
+    async getVideoLikes(videoId) {
         return fetch(`http://localhost:8000/api/v1/videos/likes/${videoId}`,{
             method: 'GET',
             headers: {
@@ -131,8 +101,28 @@ export class VideoService {
         }).then(res => res.json());
     }
 
-    async getSubscribeChannelsListOfCurrentUser() {
-        return fetch(`http://localhost:8000/api/v1/videos/get-subscribe-channels-list-of-current-user`,{
+    // async getSubscribeChannelsListOfCurrentUser() {
+    //     return fetch(`http://localhost:8000/api/v1/videos/get-subscribe-channels-list-of-current-user`,{
+    //         method: 'GET',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+    //         }
+    //     }).then(res => res.json());
+    // }
+
+    // async getChannel(channelName) {
+    //     return fetch(`http://localhost:8000/api/v1/videos/channel/${channelName}`,{
+    //         method: 'GET',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+    //         }
+    //     }).then(res => res.json());
+    // }
+
+    async getVideosOfChannel(channelId) {
+        return fetch(`http://localhost:8000/api/v1/videos/get-videos-of-channel/${channelId}`,{
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

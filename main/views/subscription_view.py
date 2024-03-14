@@ -13,17 +13,17 @@ from main.utils.api_error import apiError
 class SubscriptionView(APIView):
     def get(self, request, channelId):
         subscribers = Subscription.getSubscriberCount(channelId)
-        isSubscribed = Subscription.isSubscribed(channelId, request.user.id)
+        isSubscribed = Subscription.isSubscribed(channelId, request.user._id)
         data = {
             'isSubscribed': isSubscribed,
-            'subscribers': subscribers
+            'subscribersCount': subscribers
         }
         print(subscribers)
         return Response(apiResponse(200, "Subscribers fetch successfully", data), status=status.HTTP_200_OK)
 
     def post(self, request, channelId):
         # channelId = request.data.get('channelId')
-        subscriberId = request.user.id
+        subscriberId = request.user._id
         
         if channelId is None or subscriberId is None:
             return Response(apiError(400, 'bad request'), status=status.HTTP_400_BAD_REQUEST)
@@ -37,7 +37,7 @@ class SubscriptionView(APIView):
 class UnsubscribeChannel(APIView):
     def post(self, request, channelId):
         # channelId = request.data.get('channelId')
-        subscriberId = request.user.id
+        subscriberId = request.user._id
         
         if channelId is None or subscriberId is None:
             return Response(apiError(400, 'bad request'), status=status.HTTP_400_BAD_REQUEST)
@@ -50,5 +50,5 @@ class UnsubscribeChannel(APIView):
 
 class GetChannelsSubscribedByUser(APIView):
     def get(self, request):
-        subscriptions = Subscription.getSubscriptions(request.user.id)
+        subscriptions = Subscription.getSubscriptions(request.user._id)
         return Response(apiResponse(200, "OK", subscriptions), status=status.HTTP_200_OK)

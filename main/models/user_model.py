@@ -1,12 +1,14 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password
 from datetime import datetime, timedelta
+import uuid
 import jwt
 import os
 
 from django.conf import settings
 
 class User(models.Model):
+    _id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     fullname = models.CharField(max_length=50, null=False, blank=False)
     email = models.CharField(max_length=100, blank=False, unique=True)
     username = models.CharField(max_length=100, blank=False, unique=True)
@@ -23,7 +25,7 @@ class User(models.Model):
     @classmethod
     def getUserById(self, id):
         try:
-            return User.objects.get(id = id)
+            return User.objects.get(_id = id)
         except User.DoesNotExist:
             return None
     
@@ -58,6 +60,7 @@ class User(models.Model):
         
     def to_dict(self):
         return {
+            '_id': self._id,
             'fullname': self.fullname,
             'email': self.email,
             'username': '@' + self.username,
@@ -73,7 +76,7 @@ class User(models.Model):
         print(os.getenv('ACCESS_TOKEN_EXPIRY'))
         tokenExpiry = datetime.utcnow() + timedelta(days=int(os.getenv('ACCESS_TOKEN_EXPIRY')))
         accessPayload = {
-            'id': self.id,
+            'id': str(self._id),
             'email': self.email,
             'username': self.username,
             'exp': tokenExpiry,
@@ -86,7 +89,7 @@ class User(models.Model):
     
     def generateRefreshToken(self):
         refreshPayload = {
-            'id': self.id,
+            'id': str(self._id),
             'exp': datetime.utcnow() + timedelta(days=int(os.getenv('REFRESH_TOKEN_EXPIRY'))),
             'iat': datetime.utcnow()
         }

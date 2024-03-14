@@ -3,13 +3,15 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { VideoPlayer } from '../index.js'
 import videoService from '../../backendapi/videoapi.js'
 import userService from '../../backendapi/userapi.js'
+import channelService from '../../backendapi/channelapi.js'
 import { isTokenValid, refreshedTokens } from '../../utils/tokenVerify.js'
 import { timeSinceUpload, secondsToTime } from '../../utils/timeConversion.js'
 
 export default function Video() {
-    const { channel, videoId } = useParams()
+    const { channelInfo, videoId } = useParams()
     const [video, setVideo] = useState({})
     const [user, setUser] = useState({})
+    const [channel, setChannel] = useState({})
     const [views, setViews] = useState('0')
     const [subscribers, setSubscribers] = useState('0')
     const [isSubscribed, setIsSubscribed] = useState(false)
@@ -20,12 +22,14 @@ export default function Video() {
     const [isLiked, setIsLiked] = useState(false)
     const navigator = useNavigate()
 
-    const channelId = channel.split('+')[1]
+    const channelId = channelInfo.split('&')[0]
+    console.log(channelId)
 
     const getVideo = async () => {
         const response = await videoService.getVideo(videoId)
         setVideo(response.data)
         setUser(response.data.user)
+        setChannel(response.data.channel)
         console.log(response.data)
     }
 
@@ -33,7 +37,11 @@ export default function Video() {
         const viewsResponse = await videoService.postView(videoId)
         const viewsNumber = viewsResponse.data
         console.log(viewsNumber)
-        if (viewsNumber >= 100000) {
+        if (viewsNumber >= 1000000000000) {
+			setViews((viewsNumber / 1000000000000).toFixed(1) + 'T')
+		}else if (viewsNumber >= 1000000000) {
+			setViews((viewsNumber / 1000000000).toFixed(1) + 'B')
+		} else if (viewsNumber >= 100000) {
             const d = viewsNumber / 1000000
             setViews(`${d.toFixed(1)}M`)
         } else if (viewsNumber >= 1000) {
@@ -45,9 +53,9 @@ export default function Video() {
     }
 
     const getSubscribers = async () => {
-        const subscribersResponse = await videoService.getSubscribers(channelId)
+        const subscribersResponse = await channelService.getSubscribers(channelId)
         console.log(subscribersResponse)
-        const subscribersNumber = subscribersResponse.data.subscribers
+        const subscribersNumber = subscribersResponse.data.subscribersCount
         setIsSubscribed(subscribersResponse.data.isSubscribed)
         console.log(subscribersNumber)
         if (subscribersNumber >= 100000) {
@@ -62,7 +70,7 @@ export default function Video() {
     }
 
     const postSubscribe = async () => {
-        const subscribeResponse = await videoService.subscribeChannel(channelId)
+        const subscribeResponse = await channelService.subscribeChannel(channelId)
         console.log(subscribeResponse)
         if (subscribeResponse.success) {
             getSubscribers()
@@ -70,7 +78,7 @@ export default function Video() {
     }
 
     const postUnsubscribe = async () => {
-        const unsubscribeResponse = await videoService.unsubscribeChannel(channelId)
+        const unsubscribeResponse = await channelService.unsubscribeChannel(channelId)
         console.log(unsubscribeResponse)
         if (unsubscribeResponse.success) {
             getSubscribers()
@@ -97,8 +105,8 @@ export default function Video() {
         getComments()
     }
 
-    const videoLikes = async () => {
-        const response = await videoService.videoLikes(videoId)
+    const getVideoLikes = async () => {
+        const response = await videoService.getVideoLikes(videoId)
         console.log(response)
         setLikesCount(response.data.likesCount)
         setIsLiked(response.data.isLiked)
@@ -107,16 +115,16 @@ export default function Video() {
     const likeVideo = async () => {
         const response = await videoService.likeVideo(videoId)
         console.log(response)
-        videoLikes()
+        getVideoLikes()
     }
 
     const unlikeVideo = async () => {
         const response = await videoService.unlikeVideo(videoId)
         console.log(response)
-        videoLikes()
+        getVideoLikes()
     }
 
-    useEffect(async () => {
+    useEffect(() => {
         // if (!isTokenValid()) {
         //     const response = await refreshedTokens()
         //     if (response) {
@@ -132,28 +140,28 @@ export default function Video() {
         getSubscribers()
         loggedinUserAvatar()
         getComments()
-        videoLikes()
+        getVideoLikes()
     }, [])
 
     return (
-        <div className="flex py-2">
+        <div className="flex py-2 mx-20">
         {/* First column (2/3 width) */}
-            <div className="w-2/3 px-6">
+            <div className="w-2/3 mr-5">
                 <VideoPlayer videoSrc={video.videoUrl} />
                 <div className='text-white py-3'>
-                    <h1 className='text-2xl font-bold'>{video.title}</h1>
+                    <h1 className='text-2xl font-bold my-3'>{video.title}</h1>
                     {/* <p className='my-2'>{views} views</p> */}
                     <div className='flex'>
-                        <div className='w-1/3 my-4 flex my-auto'>
-                            <img className='w-10 h-10 rounded-full' src={user.avatar} alt="" />
+                        <div className='w-1/2 my-4 flex my-auto'>
+                            <img className='w-10 h-10 rounded-full' src={channel.channelAvatarUrl} alt="" />
                             <div className='mx-3'>
-                                <Link className='text-lg font-semibold text-gray-200'>{user.username}</Link>
+                                <Link className='text-lg font-semibold text-gray-200' to={`/channel/${channel.channelId}?${channel.channelHandle}`}>{channel.channelName}</Link>
                                 <p className='text-sm text-gray-400'>{subscribers} Subscribers</p>
                             </div>
                         </div>
-                        <div className='w-1/3 my-4'>
+                        <div className='w-1/4 my-4'>
                             {isSubscribed ? (
-                                <button className='py-2 px-6 bg-gray-600 hover:bg-gray-500 text-gray-300 font-medium rounded-3xl'
+                                <button className='py-2 px-6 bg-gray-700 hover:bg-gray-600 text-gray-300 font-medium rounded-3xl'
                                 onClick={postUnsubscribe}
                             >Subscribed</button>
                             ) : (
@@ -163,35 +171,35 @@ export default function Video() {
                             )}
                         
                         </div>
-                        <div className='w-1/3 my-4'>
+                        <div className='w-1/4 my-4'>
                             {isLiked ? (
-                                <button className='py-2 px-6 bg-gray-600 hover:bg-gray-500 text-gray-300 font-medium rounded-3xl'
+                                <button className='py-2 px-6 bg-gray-700 hover:bg-gray-600 text-gray-300 font-medium rounded-3xl items-center'
                                 onClick={unlikeVideo}
-                            >Liked {likesCount}</button>
+                            ><i className="fa-solid fa-thumbs-up fa-xl"></i> {likesCount}</button>
                             ) : (
-                                <button className='py-2 px-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-3xl'
+                                <button className='py-2 px-6 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-3xl items-center'
                                 onClick={likeVideo}
-                            >Like {likesCount}</button>
+                            ><i className="fa-regular fa-thumbs-up fa-xl"></i> {likesCount}</button>
                             )}
                         
                         </div>
                     </div>
-                    <div className='px-2 bg-gray-600 rounded-md'>
+                    <div className='p-3  bg-gray-800 rounded-md'>
                         <p className='text-md font-semibold text-gray-200'>{views} views {timeSinceUpload(video.createdAt)}</p>
                         <p className='py-2'>{video.description}</p>
                     </div>
 
-                    <div class="max-w-4xl mt-8">
+                    <div className="max-w-4xl mt-8">
                     {/* <!-- Comment Form Container --> */}
-                        <form class="flex space-x-4">
+                        <form className="flex space-x-4">
                             {/* <!-- Avatar --> */}
-                            <img src={loggedInAvatar} alt="Avatar" class="w-10 h-10 rounded-full" />
+                            <img src={loggedInAvatar} alt="Avatar" className="w-10 h-10 rounded-full" />
 
                             {/* <!-- Input Field --> */}
                             {/* <!-- Input field with bottom border --> */}
                             <input type="text" 
                             placeholder="Enter your comment..." 
-                            class="bg-gray-700 w-full border-b border-gray-300 focus:outline-none"
+                            className="bg-black w-full border-b border-gray-500 focus:outline-none"
                             value={comment}
                             onChange={e => setComment(e.target.value)}
                             />
@@ -199,8 +207,7 @@ export default function Video() {
 
                             {/* <!-- Submit Button --> */}
                             <button type="submit" 
-                            class="bg-gray-600 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded-3xl"
-                            onClick={postComment}
+                            className='bg-gray-800 text-gray-500 font-semibold py-2 px-4 rounded-3xl' onClick={postComment}
                             >Comment</button>
                         </form>
                     </div>

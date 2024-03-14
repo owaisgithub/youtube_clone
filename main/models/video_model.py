@@ -1,9 +1,14 @@
 from django.db import models
 
 from .user_model import User
+from .channel_model import Channel
+import uuid
+import pytz
+ist_timezone = pytz.timezone('Asia/Kolkata')
 
 
 class Video(models.Model):
+    _id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
     title = models.CharField(max_length=100)
     description = models.TextField()
     video_url = models.CharField(max_length=500)
@@ -11,8 +16,9 @@ class Video(models.Model):
     thumbnail_url = models.CharField(max_length=500)
     thumbnail_id = models.CharField(max_length=100)
     duration = models.IntegerField()
-    views = models.IntegerField(default=0)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    views = models.BigIntegerField(default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_column="user_id")
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, db_column="channel_id")
     createAt = models.DateTimeField(auto_now_add=True)
     updateAt = models.DateTimeField(auto_now=True)
     
@@ -22,7 +28,7 @@ class Video(models.Model):
     @classmethod
     def getVideoById(self, videoId):
         try:
-            return Video.objects.get(id = videoId)
+            return Video.objects.get(_id = videoId)
         except Exception as e:
             return None
         
@@ -36,7 +42,8 @@ class Video(models.Model):
                                          thumbnail_url = data.get('thumbnail_url'),
                                          thumbnail_id = data.get('thumbnail_id'),
                                          duration = data.get('duration'),
-                                         user_id = data.get('userId')
+                                         user_id = data.get('userId'),
+                                         channel_id = data.get('channelId')
                                          )
             video.save()
             return video
@@ -64,10 +71,18 @@ class Video(models.Model):
             video.to_dict() for video in videos
         ]
         return videosList
+
+    @classmethod
+    def getAllVideosOfChannel(self, channelId):
+        videos = Video.objects.filter(channel_id = channelId)
+        videosList = [
+            video.to_dict() for video in videos
+        ]
+        return videosList
         
     def to_dict(self):
         return {
-            'id': self.id,
+            '_id': self._id,
             'title': self.title,
             'description': self.description,
             'videoUrl': self.video_url,
@@ -75,12 +90,18 @@ class Video(models.Model):
             'duration': self.duration,
             'views': self.views,
             'user' : {
-                'userId': self.user.id,
+                'userId': self.user._id,
                 'username': '@' + self.user.username,
                 'avatar': self.user.avatar,
             },
+            'channel' : {
+                'channelId': self.channel._id,
+                'channelName': self.channel.channelName,
+                'channelHandle': self.channel.channelHandle,
+                'channelAvatarUrl': self.channel.channelAvatarUrl,
+            },
             
-            'createdAt': self.createAt.strftime('%Y-%m-%d %H:%M:%S'),
-            'updatedAt': self.updateAt.strftime('%Y-%m-%d %H:%M:%S')
+            'createdAt': self.createAt.astimezone(ist_timezone),
+            'updatedAt': self.updateAt.astimezone(ist_timezone)
         }
     

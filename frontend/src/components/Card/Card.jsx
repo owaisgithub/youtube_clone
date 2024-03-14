@@ -33,7 +33,7 @@ const Card = ({ imageUrl, title, views, timestamp, profile, chennelName, timeUpl
                 </div>
                 <div className='w-5/6'>
                     <p className='text-lg font-semibold text-white'>{makeVideoTitle()}</p>
-                    <p className='text-sm text-gray-300'>{chennelName}</p>
+                    <p className='text-sm text-gray-300'>{chennelName} <i class="fa-solid fa-circle-check fa-xs text-gray-300"></i></p>
                     <p className='text-sm text-gray-300'>{views} views . {timeSinceUpload(timeUpload)}</p>
                 </div>
             </div>

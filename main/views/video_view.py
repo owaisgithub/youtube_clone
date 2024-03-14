@@ -3,7 +3,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 
-from main.models.video_model import Video 
+from main.models.user_model import User
+from main.models.video_model import Video
+from main.models.channel_model import Channel
 from main.models.subscription_model import Subscription
 from main.utils.cloudinary import uploadOnCloudinry, deleteFromCloudinry
 from main.utils.api_response import apiResponse
@@ -14,12 +16,12 @@ class VideoView(APIView):
     
     def get(self, request, videoId=None):
         video = Video.getVideoById(videoId)
-        data = video.to_dict()
-        data["subscribers"] = Subscription.getSubscriberCount(video.user.id)
+        # data = video.to_dict()
+        # data["subscribers"] = Subscription.getSubscriberCount(video.user.id)
         if video is None:
             return Response(apiError(404, 'Video does not exist'), status=status.HTTP_404_NOT_FOUND)
         
-        return Response(apiResponse(200, 'get video successfully', data), status=status.HTTP_200_OK)
+        return Response(apiResponse(200, 'get video successfully', video.to_dict()), status=status.HTTP_200_OK)
     
     def post(self, request):
         print(request.user)
@@ -44,6 +46,7 @@ class VideoView(APIView):
             return Response(apiError(500, 'internal server error'), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         print("Declare the data variables")
+        channel = Channel.getChannelOfUserId(request.user._id)
         data = {
             'title': request.data.get('title'),
             'description': request.data.get('description'),
@@ -52,11 +55,9 @@ class VideoView(APIView):
             'thumbnail_url': thumbnailResponse.get('url'),
             'thumbnail_id': thumbnailResponse.get('public_id'),
             'duration': videoResponse.get('duration'),
-            # 'duration': 120,
-            'userId': request.user.id
+            'userId': request.user._id,
+            'channelId': channel._id
         }
-        
-        # print("Video Data: ", data)
         
         videoObject = Video.createVideo(data)
         # print(videoObject)
@@ -135,10 +136,15 @@ class VideoView(APIView):
         
         return Response(apiResponse(200, "video remove successfully"), status=status.HTTP_200_OK)
     
+
+class GetVideosOfChannel(APIView):
+    def get(self, request, channelId):
+        print("Channel ID: ", channelId)
+        videoList = Video.getAllVideosOfChannel(channelId)
+        return Response(apiResponse(200, "OK", videoList), status=200)
     
 class AllVideosView(APIView):
     permission_classes = (AllowAny,)
-    
     def get(self, request):
         videos = Video.getAllVideos()
         if videos is None:
@@ -163,3 +169,20 @@ class ViewsOfVideo(APIView):
         video.save()
         
         return Response(apiResponse(200, 'post views successfully', video.views), status=status.HTTP_200_OK)
+
+
+class ChannelDetails(APIView):
+    def get(self, request, channelName):
+        channelName = channelName.replace('@', '')
+        user = User.getUserByUsername(channelName)
+        videos = Video.getAllVideosOfUser(user.id)
+        subscriberCount = Subscription.getSubscriberCount(user.id)
+        isSubscribed = Subscription.isSubscribed(user.id, request.user.id)
+        data = {
+            'user': user.to_dict(),
+            'videos': videos,
+            'subscriberCount': subscriberCount,
+            'isSubscribed': isSubscribed
+        }
+        # print(user.to_dict())
+        return Response(apiResponse(200, 'OK', data), status=status.HTTP_200_OK)

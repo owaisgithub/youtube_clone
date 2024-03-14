@@ -6,8 +6,6 @@ import getAuthHeaders from "../../utils/authHeader"
 import authService from "../../backendapi/userapi";
 
 function Header() {
-    // const user = useSelector(state => state.user)
-    // const tokens = useSelector(state => state.tokens)
     const isAuthenticated = useSelector(state => state.isAuthenticated)
 
     const [isLogin, setLogin] = useState(false)
@@ -17,7 +15,6 @@ function Header() {
 
     const logoutUser = async () => {
         const logoutUser = await authService.logout()
-        // dispatch(logout())
         console.log(logoutUser)
         if (logoutUser.success) {
           dispatch(logout())
@@ -27,9 +24,11 @@ function Header() {
     const toggleDropdown = async () => {
       const userResponse = await authService.userProfile()
       setUser(userResponse.data)
+      console.log(userResponse.data)
       const dropdownMenu = document.getElementById('dropdown-menu');
       dropdownMenu.classList.toggle('hidden');
     }
+
 
     useEffect(() => {
         if (localStorage.getItem('accessToken')) {
@@ -55,7 +54,7 @@ function Header() {
     }, [isAuthenticated, login, setLogin])
 
     return (
-      <nav className="bg-gray-800 px-5 py-2 fixed w-full top z-10">
+      <nav className="bg-gray-900 px-5 py-2 fixed w-full top z-10">
         <div className="container mx-auto flex items-center justify-between">
           {/* Left section */}
           <div className="text-white font-bold text-xl">
@@ -68,7 +67,7 @@ function Header() {
                 placeholder="Search"
                 className="px-3 py-2 w-1/2 rounded-l-3xl bg-gray-800 border border-gray-700 focus:outline-none text-white placeholder-gray-500"
             />
-            <i className="fas fa-search text-white bg-gray-700 border-gray-700 border px-6 py-3 rounded-r-3xl cursor-pointer"></i>
+            <i className="fas fa-search text-white bg-gray-700 border-gray-600 border px-6 py-3 rounded-r-3xl cursor-pointer"></i>
           </div>
 
           {/* Right section */}
@@ -79,7 +78,7 @@ function Header() {
                 <button className="text-white" onClick={toggleDropdown}>
                   <img src={localStorage.getItem('userAvatar')} alt="Profile Image" className="h-8 w-8 rounded-full ml-10" />
                 </button>
-                <div id="dropdown-menu" class="hidden absolute right-0 w-64 bg-gray-900 rounded-md shadow-lg text-white py-3">
+                <div id="dropdown-menu" className="hidden absolute right-0 w-64 bg-gray-900 rounded-md shadow-lg text-white py-3">
                   <div className="flex py-5 px-4">
                     <div className="w-1/4">
                       <img src={user.avatar} className="h-10 w-10 rounded-full" />
@@ -89,6 +88,12 @@ function Header() {
                       <p className="text-gray-200">{user.username}</p>
                     </div>
                   </div>
+                  <hr className="border-gray-500 py-1" />
+                  {user.isChannel ? (
+					 <Link to={`/channel/${user.channelId}?${user.channelHandle}`} className="block px-4 py-2 cursor-pointer hover:bg-gray-800 hover:mr-2 mb-2">Go To Your Channel</Link>
+				  ) : (
+                     <Link to="/create-channel" className="block px-4 py-2 cursor-pointer hover:bg-gray-800 hover:mr-2 mb-2">Create Your Channel</Link>
+                  )}
                   <hr className="border-gray-500 py-1" />
                   <p className="block px-4 cursor-pointer py-2 hover:bg-gray-800 hover:mr-2" onClick={logoutUser}>Logout</p>
                 </div>

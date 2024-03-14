@@ -6,10 +6,11 @@ from.video_model import Video
 import pytz
 ist_timezone = pytz.timezone('Asia/Kolkata')
 
+
 class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    video = models.ForeignKey(Video, on_delete=models.CASCADE)
-    comment = models.CharField(max_length=255)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, db_column="user_id")
+    video = models.ForeignKey(Video, on_delete=models.CASCADE, db_column="video_id")
+    comment = models.CharField(max_length=1000)
     createdAt = models.DateTimeField(auto_now_add=True)
     
     class Meta:
@@ -20,11 +21,11 @@ class Comment(models.Model):
         return {
             'id': self.id,
             'user': {
-                'userId': self.user.id,
+                'userId': self.user._id,
                 'avatarUrl': self.user.avatar,
                 'username': self.user.username,
             },
-            'videoId': self.video.id,
+            'videoId': self.video._id,
             'comment': self.comment,
             'createdAt': self.createdAt.astimezone(ist_timezone)
         }

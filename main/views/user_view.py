@@ -9,6 +9,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from main.models.user_model import User
 from main.models.video_model import Video
 from main.models.subscription_model import Subscription
+from main.models.channel_model import Channel
 from main.utils.cloudinary import uploadOnCloudinry, deleteFromCloudinry
 from main.utils.api_response import apiResponse
 from main.utils.api_error import apiError
@@ -21,6 +22,7 @@ class UserView(APIView):
     
     def post(self, request):
         data = request.data
+        print(data)
         print(data.get('fullname'))
         print("User avatar", data.get('avatar'))
         if data.get('fullname') is None or data.get('email') is None or data.get('username') is None or data.get('password') is None or data.get('avatar') is None:
@@ -36,7 +38,7 @@ class UserView(APIView):
                             status = status.HTTP_400_BAD_REQUEST)
         
         res = uploadOnCloudinry(data.get('avatar'), 'user_avatar')
-        print(res)
+        # print(res)
         if res is None:
             return Response(apiError(500,
                                      "internal server error"), 
@@ -45,7 +47,7 @@ class UserView(APIView):
         data['avatar'] = res.get('url')
         data['avatar_id'] = res.get('public_id')
         user = User.create_user(data)
-        print(user.to_dict())
+        # print(user.to_dict())
         return Response(apiResponse(201, 
                                     "create succesfully", 
                                     user.to_dict()), 
@@ -85,8 +87,8 @@ class LoginView(APIView):
 
 class LogoutView(APIView):
     def post(self, request):
-        print(request.META.get('HTTP_AUTHORIZATION'))
-        user = User.getUserById(request.user.id)
+        # print(request.META.get('HTTP_AUTHORIZATION'))
+        user = User.getUserById(request.user._id)
         if user is None:
             return Response(apiError(401, "Invalid Credentials"),
                             status=status.HTTP_401_UNAUTHORIZED)
@@ -193,27 +195,26 @@ class UpdateAvatar(APIView):
 
 class UserProfile(APIView):
     def get(self, request):
-        user = User.getUserById(request.user.id)
+        # print(request.user)
+        user = User.getUserById(request.user._id)
         if user is None:
             return Response(apiError(401, 'User does not exist'), status=status.HTTP_401_UNAUTHORIZED)
         
-        videos = Video.getAllVideosOfUser(user.id)
-        print('videos list', videos)
-        # subscriptionAndSubscriber = Subscription.getSubscriptionAndSubcriber(user.id)
-        subscribers = Subscription.getSubscribers(user.id)
-        subscriptions = Subscription.getSubscriptions(user.id)
-        
         response = user.to_dict()
-        # response['videos'] = videos
-        # response['subscribers'] = subscribers
-        # response['subscriptions'] = subscriptions
+        if Channel.isChannelExistOfUser(user._id) is True:
+            channel = Channel.getChannelOfUserId(user._id)
+            response['isChannel'] = True
+            response['channelId'] = channel._id
+            response['channelHandle'] = channel.channelHandle
+        else:
+            response['isChannel'] = False
         
         return Response(apiResponse(200, 'get user profile successfully', response), status=status.HTTP_200_OK)
 
 
 class GetLoggedInUserAvatar(APIView):
     def get(self, request):
-        userId = request.user.id
+        userId = request.user._id
         user = User.getUserById(userId)
         if user is None:
             return Response(apiError(401, 'User does not exist'), status=status.HTTP_401_UNAUTHORIZED)

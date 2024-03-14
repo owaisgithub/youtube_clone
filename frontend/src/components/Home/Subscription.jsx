@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
 import { Sidebar } from '../index.js'
-import videoService from '../../backendapi/videoapi.js'
+// import videoService from '../../backendapi/videoapi.js'
+import channelService from '../../backendapi/channelapi.js'
 import { timeSinceUpload } from '../../utils/timeConversion.js'
 
 function Subscription() {
@@ -11,7 +12,7 @@ function Subscription() {
     const currentPath = location.pathname
 
     const getSubscribeChannelsListOfCurrentUser = async () => {
-        const response = await videoService.getSubscribeChannelsListOfCurrentUser()
+        const response = await channelService.getSubscribeChannelsListOfCurrentUser()
         setChannelList(response.data.subscriptions)
         console.log(response.data)
     }
@@ -33,17 +34,18 @@ function Subscription() {
                     </h1>
                     {channelList.map((channel) => (
                         <div className='hover:bg-gray-600 py-3 px-6 rounded-md'>
-                        <Link key={channel.id} to={`/video-play/${channel.username}+${channel.userId}/${channel.id}`}>
-                            <div className='flex items-center'>
-                                <div className='w-1/3'>
-                                    <img src={channel.avatar} alt="" className='h-20 w-20 rounded-full' />
+                            <Link key={channel.id} to={`/channel/${channel.id}?${channel.channelHandle}`}>
+                                <div className='flex items-center'>
+                                    <div className='w-1/3'>
+                                        <img src={channel.channelAvatarUrl} alt="" className='h-20 w-20 rounded-full' />
+                                    </div>
+                                    <div className='w-2/3'>
+                                        <p className='text-white text-xl font-bold'>{channel.channelName}</p>
+                                        <p className='text-gray-400'>@{channel.channelHandle}</p>
+                                        <p className='text-gray-500'>{timeSinceUpload(channel.createdAt)}</p>
+                                    </div>
                                 </div>
-                                <div className='w-2/3'>
-                                    <p className='text-white text-2xl font-bold'>{channel.username}</p>
-                                    <p className='text-white text-gray-500'>{timeSinceUpload(channel.createdAt)}</p>
-                                </div>
-                            </div>
-                        </Link>
+                            </Link>
                         </div>
                     ))}
                 </div>
