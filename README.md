@@ -23,3 +23,8 @@ Step-by-step instructions on how to install and set up the project. For example:
 
 ```bash
 git clone https://github.com/owaisgithub/youtube_clone.git
+```
+**For Frontend Setup**
+```bash
+cd youtube_clone/frontend
+
