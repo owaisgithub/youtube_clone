@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import videoService from '../../backendapi/videoapi'
+import videoService from '../../api/videoapi'
 
 const VideoUpload = () => {
   const [videoFile, setVideoFile] = useState(null)

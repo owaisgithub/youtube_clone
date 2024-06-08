@@ -51,12 +51,12 @@ class AuthService {
         }).then(res => res.json());
     }
 
-    async userProfile() {
+    async userProfile(token) {
         return fetch('http://localhost:8000/api/v1/users/user-profile',{
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                'Authorization': `Bearer ${token}`
             }
         }).then(res => res.json());
     }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
-import videoService from "../../backendapi/videoapi.js"
+import videoService from "../../api/videoapi.js"
 import { Card } from '../index.js'
 import { Sidebar } from '../index.js'
 import { isTokenExist, isTokenValid, refreshedTokens } from '../../utils/tokenVerify.js'
@@ -42,10 +42,10 @@ export default function Home() {
 
 	// console.log(new Date())
 	useEffect(() => {
-		if (!isTokenExist() || !isTokenValid()) {
-			dispatch(logout())
-			navigate('/login')
-		}
+		// if (!isTokenExist() || !isTokenValid()) {
+		// 	dispatch(logout())
+		// 	navigate('/login')
+		// }
 		setStartTime(hours.getTime())
 		getAllVideos()
 		console.log(videosList)
@@ -56,6 +56,7 @@ export default function Home() {
 		// }
 	}, [])
 
+	
 	return (
 		<div className='flex flex-1 h-screen'>
 			{/* Left Section */}

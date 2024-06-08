@@ -1,9 +1,9 @@
-import userService from '../backendapi/userapi.js';
+import userService from '../api/userapi.js';
 
-const isTokenValid = () => {
-    const token = localStorage.getItem('accessToken');
-    const tokenExpiry = localStorage.getItem('tokenExpiry');
-    if (token && new Date(tokenExpiry) > new Date()) {
+const isTokenValid = (tokenExpiry) => {
+    // const token = localStorage.getItem('accessToken');
+    // const tokenExpiry = localStorage.getItem('tokenExpiry');
+    if (new Date(tokenExpiry) > new Date()) {
         return true;
     }
     return false;

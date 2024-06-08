@@ -6,7 +6,7 @@ import Sidebar from "./Sidebar/Sidebar";
 import VideoPlayer from "./Videos/VideoPlayer";
 import Video from "./Videos/Video";
 import VideoUpload from "./Videos/VideoUpload";
-import Subscription from "./Home/Subscription";
+import Subscription from "./Channel/Subscription";
 import Channel from "./Channel/Channel";
 import { CreateChannel } from "./Channel/CreateChannel";
 import ImageUploadModal from "./Modal/ImageUploadModal";

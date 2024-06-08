@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import authService from '../../backendapi/userapi';
+import authService from '../../api/userapi';
 import { login } from '../../features/auth/authSlice'
+import { loginUser } from '../../features/auth/authActions';
 import { useDispatch } from 'react-redux'
 
 const Login = () => {
@@ -17,23 +18,31 @@ const Login = () => {
     e.preventDefault();
     // Handle login logic here
     setLoading(true)
-    const data = await authService.login(username, password)
-    if (data.success){
-        dispatch(login({
-          accessToken: data.data.accessToken,
-          refreshToken: data.data.refreshToken,
-          user: data.data.user,
-          tokenExpiry: data.data.tokenExpiry,
-          userAvatar: data.data.userAvatar
-        }))
-        console.log(data)
+    if (await dispatch(loginUser(username, password))) {
         navigate('/')
-    } else {
-      console.log(data.data)
-      alert(data.message)
     }
-    console.log('Login clicked with:', data)
     setLoading(false)
+  //   authService.login(username, password)
+	// .then((data) => {
+  //       console.log(data)
+  //       if (data.success){
+  //           let userData = data.data
+  //           dispatch(login({ userData: userData }))
+  //           console.log(data)
+	// 		navigate('/')
+  //       } else {
+  //           console.log(data.data)
+  //           alert(data.message)
+  //       }
+	// })
+	// .catch((err) => {
+	// 	console.log(err)
+	// 	alert(err.message)
+	// })
+	// .finally(() => {
+  //       
+  //   })
+    
   };
 
   return (

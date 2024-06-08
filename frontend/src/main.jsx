@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom'
 import { Provider } from 'react-redux'
 import store from './app/store'
 
-// import App from './App.jsx'
+import App from './App.jsx'
 import { Header, Home, About, Subscription, Video, Login, Register, VideoUpload, Channel, CreateChannel } from './components/index.js'
 import './index.css';
 import '@fortawesome/fontawesome-free/css/all.css'
@@ -13,7 +13,7 @@ import '@fortawesome/fontawesome-free/css/all.css'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>
     <div className='bg-black'>
-      <Router>
+      {/* <Router>
         <Header />
         <div className='pt-12'>
           <Routes>
@@ -28,7 +28,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Route path='/create-channel' Component={CreateChannel} />
           </Routes>
         </div>
-      </Router>
+      </Router> */}
+      <App />
     </div>
   </Provider>,
 )

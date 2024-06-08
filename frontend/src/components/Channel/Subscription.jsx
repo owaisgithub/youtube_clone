@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useLocation, Link } from 'react-router-dom'
 import { Sidebar } from '../index.js'
 // import videoService from '../../backendapi/videoapi.js'
-import channelService from '../../backendapi/channelapi.js'
+import channelService from '../../api/channelapi.js'
 import { timeSinceUpload } from '../../utils/timeConversion.js'
 
 function Subscription() {
@@ -34,7 +34,7 @@ function Subscription() {
                     </h1>
                     {channelList.map((channel) => (
                         <div className='hover:bg-gray-600 py-3 px-6 rounded-md'>
-                            <Link key={channel.id} to={`/channel/${channel.id}?${channel.channelHandle}`}>
+                            <Link key={channel._id} to={`/channel/${channel.id}?${channel.channelHandle}`}>
                                 <div className='flex items-center'>
                                     <div className='w-1/3'>
                                         <img src={channel.channelAvatarUrl} alt="" className='h-20 w-20 rounded-full' />

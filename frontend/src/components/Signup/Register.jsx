@@ -1,5 +1,5 @@
 import { useState } from "react";
-import authService from "../../backendapi/userapi";
+import authService from "../../api/userapi";
 
 
 const Register = () => {

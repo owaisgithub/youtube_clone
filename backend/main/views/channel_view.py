@@ -50,13 +50,15 @@ class ChannelView(APIView):
 class GetChannelDetails(APIView):
     def get(self, request, channelId=None):
         print("Channel ID: ", channelId)
+        print("User ID: ", request.user._id)
         if channelId is None:
-            if Channel.isChannelExistOfUser(request.user._id) is False:
-                return Response(apiError(400, "channel not exist with this user"), status=400)
+            # if Channel.isChannelExistOfUser(request.user._id) is False:
+            #     return Response(apiError(400, "channel not exist with this user"), status=400)
 
             channel = Channel.getChannelOfUserId(request.user._id)
+            print(channel)
             if channel is None:
-                return Response(apiError(400, "channel not exist with this user"), status=400)
+                return Response(apiError(400, "channel not exist with this user"), status=404)
 
             channel = channel.to_dict()
             if (channel['user']['userId'] == request.user._id):

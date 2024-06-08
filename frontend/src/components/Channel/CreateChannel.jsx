@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import channelService from '../../backendapi/channelapi'
+import channelService from '../../api/channelapi'
 
 export const CreateChannel = () => {
     const [channelAvatar, setChannelAvatar] = useState(null)

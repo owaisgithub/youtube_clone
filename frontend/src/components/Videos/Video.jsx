@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { VideoPlayer } from '../index.js'
-import videoService from '../../backendapi/videoapi.js'
-import userService from '../../backendapi/userapi.js'
-import channelService from '../../backendapi/channelapi.js'
+import videoService from '../../api/videoapi.js'
+import userService from '../../api/userapi.js'
+import channelService from '../../api/channelapi.js'
 import { isTokenValid, refreshedTokens } from '../../utils/tokenVerify.js'
 import { timeSinceUpload, secondsToTime } from '../../utils/timeConversion.js'
 
