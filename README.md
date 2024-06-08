@@ -33,7 +33,7 @@ npm run dev
 **For Backend Setup**
 ```bash
 ## Create virtual environment
-cd youtube_clone
+`cd youtube_clone`
 virtualenv venv
 **For Windows**
 venv\Script\actiavte
