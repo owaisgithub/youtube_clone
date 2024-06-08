@@ -27,4 +27,9 @@ git clone https://github.com/owaisgithub/youtube_clone.git
 **For Frontend Setup**
 ```bash
 cd youtube_clone/frontend
-
+npm install
+npm run dev
+```
+**For Backend Setup**
+```bash
+$$ Create virtual environment
