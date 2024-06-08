@@ -32,4 +32,4 @@ npm run dev
 ```
 **For Backend Setup**
 ```bash
-$$ Create virtual environment
+-- Create virtual environment
