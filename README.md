@@ -33,3 +33,14 @@ npm run dev
 **For Backend Setup**
 ```bash
 ## Create virtual environment
+cd youtube_clone`
+virtualenv venv
+**For Windows**
+venv\Script\actiavte
+**For Linux or Mac**
+venv\bin\actiavte
+cd backend
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
