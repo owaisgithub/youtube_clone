@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
-
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { addChannelStatus } from '../../features/auth/authSlice'
 import channelService from '../../api/channelapi'
+
 
 export const CreateChannel = () => {
     const [channelAvatar, setChannelAvatar] = useState(null)
@@ -9,6 +12,10 @@ export const CreateChannel = () => {
     const [channelDescription, setChannelDescription] = useState('')
     const [loading, setLoading] = useState(false)
 
+    const userStatus = useSelector(state => state.auth.status)
+
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -19,11 +26,23 @@ export const CreateChannel = () => {
         formData.append('channelBackground', channelBgImage)
         formData.append('channelName', channelName)
         formData.append('channelDescription', channelDescription)
-        console.log(formData)
+        console.log(formData.channelAvatar)
+        console.log(channelAvatar)
         const channelResponse = await channelService.createChannel(formData)
+        if (channelResponse.success) {
+            dispatch(addChannelStatus(true))
+            // navigate('/dashboard')
+        }
         console.log(channelResponse)
         setLoading(false)
     }
+
+    useEffect(() => {
+        if (!userStatus) {
+            alert('Please Login')
+            navigate('/login')
+        }
+    }, [])
 
     return (
         <div className="py-4 mx-20 h-screen">

@@ -5,15 +5,53 @@ from main.models.user_model import User
 import uuid
 import datetime
 
+
 class Channel(models.Model):
-    _id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    channelName = models.CharField(max_length=100, db_column='channel_name', null=True)
-    channelHandle = models.CharField(max_length=100, db_column='channel_handle', null=True)
+    _id = models.CharField(
+        primary_key = True, 
+        default = uuid.uuid4().hex, 
+        editable = False,
+        max_length = 32
+        )
+    
+    channelName = models.CharField(
+        max_length = 100, 
+        db_column = 'channel_name', 
+        null = True,
+        )
+    
+    channelHandle = models.CharField(
+        max_length = 100, 
+        db_column = 'channel_handle', 
+        null = True
+        )
+    
     channelDescription = models.TextField(db_column='channel_description')
-    channelAvatarUrl = models.CharField(max_length=5000, db_column='channel_avatar_url', null=True)
-    channelAvatarId = models.CharField(max_length=200, db_column='channel_avatar_id', null=True)
-    channelBackgroundUrl = models.CharField(max_length=5000, db_column='channel_background_url', null=True)
-    channelBackgroundId = models.CharField(max_length=200, db_column='channel_background_id', null=True)
+
+    channelAvatarUrl = models.CharField(
+        max_length = 5000, 
+        db_column = 'channel_avatar_url', 
+        null = True
+        )
+    
+    channelAvatarId = models.CharField(
+        max_length = 200, 
+        db_column = 'channel_avatar_id', 
+        null = True
+        )
+    
+    channelBackgroundUrl = models.CharField(
+        max_length = 5000,
+        db_column = 'channel_background_url', 
+        null = True
+        )
+    
+    channelBackgroundId = models.CharField(
+        max_length = 200, 
+        db_column = 'channel_background_id', 
+        null = True
+        )
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE, db_column='user_id')
     createAt = models.DateTimeField(auto_now_add=True, db_column='create_at')
     updateAt = models.DateTimeField(auto_now=True, db_column='update_at')

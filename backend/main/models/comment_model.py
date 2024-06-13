@@ -41,7 +41,7 @@ class Comment(models.Model):
     
     @classmethod
     def comments(cls, videoId):
-        comments = Comment.objects.filter(video_id=videoId).order_by('-createdAt')
+        comments = Comment.objects.filter(video_id=videoId)##.order_by('createdAt')
         commentsList = [
             comment.to_dict() for comment in comments
         ]

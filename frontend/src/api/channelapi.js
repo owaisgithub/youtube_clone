@@ -2,73 +2,57 @@ import axiosInstance from './axios';
 
 class ChannelService {
     async createChannel(data) {
-        return fetch('http://localhost:8000/api/v2/channels/create-channel', {
-            method: 'POST',
-            headers: {
-                // 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            },
-            body: data
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.post('/channels/create-channel', data);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async getChannelDetails() {
         try {
             const response = await axiosInstance.get('/channels/get-channel-details')
             return response.data;
-            // .then((res) => {
-            //     console.log(res.data);
-            // })
-            // .catch((err) => {
-            //     console.log(err.response);
-            // });
-            // console.log(res);
-            // return axiosInstance.get('/channels/get-channel-details')
-            // .then(res => res);
-            // return res.data;
         } catch (error) {
             return error.response.data;
         }
     }
 
     async getChannelDetailsById(channelId) {
-        return fetch(`http://localhost:8000/api/v2/channels/get-channel-details-by-id/${channelId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.get(`/channels/get-channel-details-by-id/${channelId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async getSubscribers(channelId) {
-        return fetch(`http://localhost:8000/api/v2/subscribers/get-subscribers/${channelId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.get(`/subscribers/get-subscribers/${channelId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async subscribeChannel(channelId) {
-        return fetch(`http://localhost:8000/api/v2/subscribers/subscribe-channel/${channelId}`,{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.post(`/subscribers/subscribe-channel/${channelId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async unsubscribeChannel(channelId) {
-        return fetch(`http://localhost:8000/api/v2/subscribers/unsubscribe-channel/${channelId}`,{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.post(`subscribers/unsubscribe-channel/${channelId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async getSubscribeChannelsListOfCurrentUser() {
@@ -81,38 +65,32 @@ class ChannelService {
     }
 
     async uploadChannelBackgroundImage(formData) {
-        return fetch('http://localhost:8000/api/v2/channels/upload-channel-background-image', {
-            method: 'POST',
-            headers: {
-                // 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            },
-            body: formData
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.post('/channels/upload-channel-background-image', formData);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async uploadChannelAvatarImage(formData) {
-        return fetch('http://localhost:8000/api/v2/channels/upload-channel-avatar-image', {
-            method: 'POST',
-            headers: {
-                // 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            },
-            body: formData
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.post('/channels/upload-channel-avatar-image', formData);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async changeChannelName(channelName) {
-        return fetch('http://localhost:8000/api/v2/channels/change-channel-name', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            },
-            body: JSON.stringify({
+        try {
+            const response = await axiosInstance.post('/channels/change-channel-name', {
                 'channelName': channelName
-            })
-        }).then(res => res.json());
+            });
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 }
 

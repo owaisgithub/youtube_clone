@@ -5,22 +5,55 @@ import uuid
 import jwt
 import os
 
-from django.conf import settings
-
 class User(models.Model):
-    _id = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
-    fullname = models.CharField(max_length=50, null=False, blank=False)
-    email = models.CharField(max_length=100, blank=False, unique=True)
-    username = models.CharField(max_length=100, blank=False, unique=True)
+    _id = models.CharField(
+        primary_key = True,
+        default = uuid.uuid4().hex,
+        editable = False,
+        max_length = 32
+        )
+    
+    fullname = models.CharField(
+        max_length = 50, 
+        null = False, 
+        blank = False
+        )
+    
+    email = models.CharField(
+        max_length = 100, 
+        blank = False, 
+        unique = True
+        )
+    
+    username = models.CharField(
+        max_length = 100, 
+        blank = False, 
+        unique = True
+        )
+    
     avatar = models.CharField(max_length=5000)
     avatar_id = models.CharField(max_length=200)
-    password = models.CharField(max_length=500, blank=False, unique=True)
+
+    password = models.CharField(
+        max_length = 500, 
+        blank = False, 
+        unique = False
+        )
+
     refreshToken = models.CharField(max_length=500)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
     
     class Meta:
         db_table = 'Users'
+
+    def save(self, *args, **kwargs):
+        print("save method is called")
+        # self._id = self._id.replace('_', '')
+        print("Save user into the database", self._id)
+        print("Print agrs in save method: ", args)
+        print("Kwagrs: ", kwargs)
+        super(User, self).save(*args, **kwargs)
         
     @classmethod
     def getUserById(self, id):

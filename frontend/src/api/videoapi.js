@@ -1,134 +1,121 @@
+import axiosInstance from './axios';
+
 export class VideoService {
     async getVideos() {
-        return fetch('http://localhost:8000/api/v1/videos/all-videos',{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.get('/videos/all-videos');
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async getVideo(videoId) {
-        return fetch(`http://localhost:8000/api/v1/videos/get-video/${videoId}`,{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.get(`/videos/get-video/${videoId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async getViews(videoId) {
-        return fetch(`http://localhost:8000/api/v1/videos/get-views/${videoId}`,{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.get(`/videos/get-views/${videoId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async postView(videoId) {
-        return fetch(`http://localhost:8000/api/v1/videos/update-views/${videoId}`,{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.post(`/videos/update-views/${videoId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async uploadVideo(video) {
-        return fetch('http://localhost:8000/api/v1/videos/upload-video',{
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            },
-            body: video
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.post('/videos/upload-video', video);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async getComments(videoId) {
-        return fetch(`http://localhost:8000/api/v1/videos/get-comments/${videoId}`,{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.get(`/videos/get-comments/${videoId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async postComment(videoId, comment) {
-        return fetch(`http://localhost:8000/api/v1/videos/comment/${videoId}`,{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            },
-            body: JSON.stringify({
-                'comment': comment
-            })
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.post(`/videos/comment/${videoId}`, {'comment': comment});
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async getVideoLikes(videoId) {
-        return fetch(`http://localhost:8000/api/v1/videos/likes/${videoId}`,{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.get(`/videos/likes/${videoId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async likeVideo(videoId) {
-        return fetch(`http://localhost:8000/api/v1/videos/like-video/${videoId}`,{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.post(`/videos/like-video/${videoId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
     async unlikeVideo(videoId) {
-        return fetch(`http://localhost:8000/api/v1/videos/unlike-video/${videoId}`,{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.post(`/videos/unlike-video/${videoId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 
-    // async getSubscribeChannelsListOfCurrentUser() {
-    //     return fetch(`http://localhost:8000/api/v1/videos/get-subscribe-channels-list-of-current-user`,{
-    //         method: 'GET',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-    //         }
-    //     }).then(res => res.json());
-    // }
+    async getSubscribeChannelsListOfCurrentUser() {
+        try {
+            const response = await axiosInstance.get(`/videos/get-subscribe-channels-list-of-current-user`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
+    }
 
-    // async getChannel(channelName) {
-    //     return fetch(`http://localhost:8000/api/v1/videos/channel/${channelName}`,{
-    //         method: 'GET',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-    //         }
-    //     }).then(res => res.json());
-    // }
+    async getChannel(channelName) {
+        try {
+            const response = await axiosInstance.get(`/videos/channel/${channelName}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
+    }
 
     async getVideosOfChannel(channelId) {
-        return fetch(`http://localhost:8000/api/v1/videos/get-videos-of-channel/${channelId}`,{
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            }
-        }).then(res => res.json());
+        try {
+            const response = await axiosInstance.get(`/videos/get-videos-of-channel/${channelId}`);
+            return response.data;
+        } catch (error) {
+            return error.response.data;
+        }
     }
 }
 

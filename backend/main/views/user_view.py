@@ -41,12 +41,13 @@ class UserView(APIView):
         # print(res)
         if res is None:
             return Response(apiError(500,
-                                     "internal server error"), 
+                                     "internal server error to upload images"), 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         data['avatar'] = res.get('url')
         data['avatar_id'] = res.get('public_id')
         user = User.create_user(data)
+        print("User: ", user)
         # print(user.to_dict())
         return Response(apiResponse(201, 
                                     "create succesfully", 

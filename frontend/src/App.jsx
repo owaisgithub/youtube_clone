@@ -9,10 +9,10 @@ function App() {
             <Header />
             <div className='pt-12'>
                 <Routes>
+                    <Route path='/' Component={Home} />
                     {userStatus ? (
                         <>
                         {/* These are protected urls which acces by an authenticated user */}
-                        <Route path='/' Component={Home} />
                         <Route path='/upload-video' Component={VideoUpload} />
                         <Route path='/subscription' Component={Subscription} />
                         <Route path='/video-play/:channelInfo/:videoId' Component={Video} />

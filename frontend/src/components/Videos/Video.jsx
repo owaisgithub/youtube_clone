@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { addCommentsList, addComment } from '../../features/video/commentSlice.js'
 import { VideoPlayer } from '../index.js'
 import videoService from '../../api/videoapi.js'
 import userService from '../../api/userapi.js'
 import channelService from '../../api/channelapi.js'
-import { isTokenValid, refreshedTokens } from '../../utils/tokenVerify.js'
 import { timeSinceUpload, secondsToTime } from '../../utils/timeConversion.js'
 
 export default function Video() {
@@ -16,7 +17,7 @@ export default function Video() {
     const [subscribers, setSubscribers] = useState('0')
     const [isSubscribed, setIsSubscribed] = useState(false)
     const [loggedInAvatar, setLoggedInAvatar] = useState(null)
-    const [commentsList, setCommentsList] = useState([])
+    // const [commentsList, setCommentsList] = useState([])
     const [comment, setComment] = useState('')
     const [likesCount, setLikesCount] = useState(0)
     const [isLiked, setIsLiked] = useState(false)
@@ -25,12 +26,24 @@ export default function Video() {
     const channelId = channelInfo.split('&')[0]
     console.log(channelId)
 
+    const dispatch = useDispatch()
+    const userData = useSelector(state => state.auth.userData)
+    const commentsList = useSelector(state => state.comments.commentsList)
+    const videosList = useSelector(state => state.videos.videosList)
+
     const getVideo = async () => {
-        const response = await videoService.getVideo(videoId)
-        setVideo(response.data)
-        setUser(response.data.user)
-        setChannel(response.data.channel)
-        console.log(response.data)
+        // const response = await videoService.getVideo(videoId)
+        for (let i = 0; i < videosList.length; i++) {
+            if (videosList[i]._id === videoId) {
+                setVideo(videosList[i])
+                console.log(videosList[i])
+                break
+            }
+        }
+        // setVideo(response.data)
+        // setUser(response.data.user)
+        // setChannel(response.data.channel)
+        // console.log(response.data)
     }
 
     const postView = async () => {
@@ -85,25 +98,31 @@ export default function Video() {
         }
     }
 
-    const loggedinUserAvatar = async () => {
-        const response = await userService.loggedInUserAvatar()
-        console.log(response)
-        setLoggedInAvatar(response.data)
-    }
+    // const loggedinUserAvatar = async () => {
+    //     const response = await userService.loggedInUserAvatar()
+    //     console.log(response)
+    //     setLoggedInAvatar(response.data)
+    // }
 
     const getComments = async () => {
         const response = await videoService.getComments(videoId)
         console.log(response)
-        setCommentsList(response.data)
+        if (response.success) {
+            dispatch(addCommentsList(response.data)) 
+        }
+        // setCommentsList(response.data)
     }
 
     const postComment = async (e) => {
         e.preventDefault()
         const response = await videoService.postComment(videoId, comment)
         console.log(response)
+        if (response.success) {
+            dispatch(addComment(response.data))
+        }
         setComment('')
-        getComments()
     }
+
 
     const getVideoLikes = async () => {
         const response = await videoService.getVideoLikes(videoId)
@@ -138,7 +157,7 @@ export default function Video() {
         getVideo()
         postView()
         getSubscribers()
-        loggedinUserAvatar()
+        // loggedinUserAvatar()
         getComments()
         getVideoLikes()
     }, [])
@@ -153,9 +172,9 @@ export default function Video() {
                     {/* <p className='my-2'>{views} views</p> */}
                     <div className='flex'>
                         <div className='w-1/2 my-4 flex my-auto'>
-                            <img className='w-10 h-10 rounded-full' src={channel.channelAvatarUrl} alt="" />
+                            <img className='w-10 h-10 rounded-full' src={video?.channel?.channelAvatarUrl} alt="" />
                             <div className='mx-3'>
-                                <Link className='text-lg font-semibold text-gray-200' to={`/channel/${channel.channelId}?${channel.channelHandle}`}>{channel.channelName}</Link>
+                                <Link className='text-lg font-semibold text-gray-200' to={`/channel/${video?.channel?.channelId}?${video?.channel?.channelHandle}`}>{video?.channel?.channelName}</Link>
                                 <p className='text-sm text-gray-400'>{subscribers} Subscribers</p>
                             </div>
                         </div>
@@ -193,7 +212,7 @@ export default function Video() {
                     {/* <!-- Comment Form Container --> */}
                         <form className="flex space-x-4">
                             {/* <!-- Avatar --> */}
-                            <img src={loggedInAvatar} alt="Avatar" className="w-10 h-10 rounded-full" />
+                            <img src={userData.userAvatar} alt="Avatar" className="w-12 h-10 rounded-full" />
 
                             {/* <!-- Input Field --> */}
                             {/* <!-- Input field with bottom border --> */}
@@ -213,9 +232,9 @@ export default function Video() {
                     </div>
 
                     <div className="max-w-xl mt-8">
-                        <h3 className='text-xl font-bold mb-5'>{commentsList.length} Comments</h3>
+                        <h3 className='text-xl font-bold mb-5'>{commentsList?.length} Comments</h3>
                         {/* <!-- Single comment --> */}
-                        {commentsList.map((comment) => (
+                        {commentsList?.toReversed()?.map((comment) => (
                             <div className="flex space-x-4 items-start" key={comment.id}>
                                 {/* <!-- Commenter's avatar --> */}
                                 <img src={comment.user.avatarUrl} alt="Avatar" className="w-10 h-10 rounded-full" />

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-
+import { useSelector } from 'react-redux'
 import { Sidebar } from '../index.js'
 import videoService from '../../api/videoapi.js'
 import channelService from '../../api/channelapi.js'
@@ -10,6 +10,7 @@ import { ImageUploadModal } from '../index.js'
 
 function Channel() {
     const {channelId} = useParams()
+    console.log(channelId)
     const location = useLocation()
     const [currentUser, setCurrentUser] = useState(false)
     const [videosList, setVideosList] = useState([])
@@ -257,7 +258,7 @@ function Channel() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gab-4">
                     {videosList.map(video =>(
-                        <div key={video.id} className="relative max-w-md rounded-lg overflow-hidden m-3 cursor-pointer">
+                        <div key={video._id} className="relative max-w-md rounded-lg overflow-hidden m-3 cursor-pointer">
                             {/* Image */}
                             <img className="w-full h-52 sm:h-52 object-cover rounded-lg" src={video.thumbnailUrl} alt="Card Image" />
                 

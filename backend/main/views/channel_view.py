@@ -24,7 +24,7 @@ class ChannelView(APIView):
             'channelBackgroundId' : None
         }
         channelAvatar = request.data.get('channelAvatar')
-        print("Channel Avatar: ", channelAvatar)
+        print("Channel Avatar: ", type(channelAvatar))
         if channelAvatar is not None:
             avatarResponse = uploadOnCloudinry(channelAvatar, 'channel_avatar')
             if avatarResponse is None:

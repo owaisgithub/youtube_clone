@@ -1,137 +1,142 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { logout, login } from "../../features/auth/authSlice";
+import { logout, login, addUserInfo } from "../../features/auth/authSlice";
 import { logoutUser } from "../../features/auth/authActions";
 import authService from "../../api/userapi";
 
 function Header() {
-  const status = useSelector((state) => state.auth.status);
-  const userData = useSelector((state) => state.auth.userData);
+    const status = useSelector((state) => state.auth.status);
+    const userData = useSelector((state) => state.auth.userData);
+    const userInfo = useSelector((state) => state.auth.userInfo);
 
-  const [isLogin, setLogin] = useState(false);
-  const [user, setUser] = useState({});
+    // const [isLogin, setLogin] = useState(false);
+    const [user, setUser] = useState({});
 
-  const dispatch = useDispatch();
+    const dispatch = useDispatch();
 
-  // user logout action
-  const logoutUser = async () => {
-      dispatch(logoutUser());
-  };
+    // user logout action
+    const logout = async () => {
+        dispatch(logoutUser());
+    };
 
-  const toggleDropdown = async () => {
-    const userResponse = await authService.userProfile(userData?.accessToken);
-    setUser(userResponse.data);
-    console.log(userResponse.data);
-    const dropdownMenu = document.getElementById("dropdown-menu");
-    dropdownMenu.classList.toggle("hidden");
-  };
+    const toggleDropdown = async () => {
+        if (userInfo === null) {
+            const userResponse = await authService.userProfile();
+            console.log(userResponse)
+            // setUser(userResponse.data);
+            dispatch(addUserInfo(userResponse.data));
+            console.log(userResponse.data);
+        }
+        const dropdownMenu = document.getElementById("dropdown-menu");
+        dropdownMenu.classList.toggle("hidden");
+    };
 
-  useEffect(() => {
-    // if (localStorage.getItem('accessToken')) {
-    //   const accessToken = localStorage.getItem('accessToken')
-    //   const refreshToken = localStorage.getItem('refreshToken')
-    //   const user = localStorage.getItem('user')
-    //   const tokenExpiry = localStorage.getItem('tokenExpiry')
-    //   const userAvatar = localStorage.getItem('userAvatar')
-    //   dispatch(login({
-    //     accessToken: accessToken,
-    //     refreshToken: refreshToken,
-    //     user: user,
-    //     tokenExpiry: tokenExpiry,
-    //     userAvatar: userAvatar
-    //   }))
-    //   setLogin(true);
-    // }
-    // if (isAuthenticated) {
-    //   setLogin(true)
-    // }
-  }, [dispatch, login, setLogin, status]);
+    //   useEffect(() => {
+    //     // if (localStorage.getItem('accessToken')) {
+    //     //   const accessToken = localStorage.getItem('accessToken')
+    //     //   const refreshToken = localStorage.getItem('refreshToken')
+    //     //   const user = localStorage.getItem('user')
+    //     //   const tokenExpiry = localStorage.getItem('tokenExpiry')
+    //     //   const userAvatar = localStorage.getItem('userAvatar')
+    //     //   dispatch(login({
+    //     //     accessToken: accessToken,
+    //     //     refreshToken: refreshToken,
+    //     //     user: user,
+    //     //     tokenExpiry: tokenExpiry,
+    //     //     userAvatar: userAvatar
+    //     //   }))
+    //     //   setLogin(true);
+    //     // }
+    //     // if (isAuthenticated) {
+    //     //   setLogin(true)
+    //     // }
+    //   }, []);
 
-  return (
+    return (
     <nav className="bg-gray-900 px-5 py-2 fixed w-full top z-10">
-      <div className="container mx-auto flex items-center justify-between">
+        <div className="container mx-auto flex items-center justify-between">
         {/* Left section */}
         <div className="text-white font-bold text-xl">
-          <Link to="/">
+            <Link to="/">
             <span className="text-white">You</span>
             <span className="text-red-500">Tube</span>
-          </Link>
+            </Link>
         </div>
 
         {/* Middle section */}
         <div className="flex-grow flex items-center justify-center">
-          <input
+            <input
             type="text"
             placeholder="Search"
             className="px-3 py-2 w-1/2 rounded-l-3xl bg-gray-800 border border-gray-700 focus:outline-none text-white placeholder-gray-500"
-          />
-          <i className="fas fa-search text-white bg-gray-700 border-gray-600 border px-6 py-3 rounded-r-3xl cursor-pointer"></i>
+            />
+            <i className="fas fa-search text-white bg-gray-700 border-gray-600 border px-6 py-3 rounded-r-3xl cursor-pointer"></i>
         </div>
 
         {/* Right section */}
         <div className="flex">
-          <Link to="/upload-video">
+            <Link to="/upload-video">
             <i className="fas fa-video text-white"></i>
-          </Link>
-          {isLogin || status ? (
+            </Link>
+            {status ? (
             <div className="relative">
-              <button className="text-white" onClick={toggleDropdown}>
+                <button className="text-white" onClick={toggleDropdown}>
                 <img
-                  src={userData.userAvatar}
-                  alt="Profile Image"
-                  className="h-8 w-8 rounded-full ml-10"
+                    src={userData.userAvatar}
+                    alt="Profile Image"
+                    className="h-8 w-8 rounded-full ml-10"
                 />
-              </button>
-              <div
+                </button>
+                <div
                 id="dropdown-menu"
                 className="hidden absolute right-0 w-64 bg-gray-900 rounded-md shadow-lg text-white py-3"
-              >
+                >
                 <div className="flex py-5 px-4">
-                  <div className="w-1/4">
-                    <img src={user.avatar} className="h-10 w-10 rounded-full" />
-                  </div>
-                  <div className="w-3/4">
+                    <div className="w-1/4">
+                    <img src={userInfo?.avatar} className="h-10 w-10 rounded-full" />
+                    </div>
+                    <div className="w-3/4">
                     <p className="leading-none text-lg text-gray-200">
-                      {user.fullname}
+                        {userInfo?.fullname}
                     </p>
-                    <p className="text-gray-200">{user.username}</p>
-                  </div>
+                    <p className="text-gray-200">{userInfo?.username}</p>
+                    </div>
                 </div>
                 <hr className="border-gray-500 py-1" />
-                {user.isChannel ? (
-                  <Link
-                    to={`/channel/${user.channelId}?${user.channelHandle}`}
+                {userInfo?.isChannel ? (
+                    <Link
+                    to={`/channel/${userInfo.channelId}?${userInfo.channelHandle}`}
                     className="block px-4 py-2 cursor-pointer hover:bg-gray-800 hover:mr-2 mb-2"
-                  >
+                    >
                     Go To Your Channel
-                  </Link>
+                    </Link>
                 ) : (
-                  <Link
+                    <Link
                     to="/create-channel"
                     className="block px-4 py-2 cursor-pointer hover:bg-gray-800 hover:mr-2 mb-2"
-                  >
+                    >
                     Create Your Channel
-                  </Link>
+                    </Link>
                 )}
                 <hr className="border-gray-500 py-1" />
                 <p
-                  className="block px-4 cursor-pointer py-2 hover:bg-gray-800 hover:mr-2"
-                  onClick={logoutUser}
+                    className="block px-4 cursor-pointer py-2 hover:bg-gray-800 hover:mr-2"
+                    onClick={logout}
                 >
-                  Logout
+                    Logout
                 </p>
-              </div>
+                </div>
             </div>
-          ) : (
+            ) : (
             <Link className="text-white ml-10" to="/login">
-              Log In
+                Log In
             </Link>
-          )}
+            )}
         </div>
-      </div>
+        </div>
     </nav>
-  );
+    );
 }
 
 export default Header;

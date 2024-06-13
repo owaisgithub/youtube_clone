@@ -6,6 +6,7 @@ from main.views.comment_view import *
 from main.views.like_view import *
 from main.views.channel_view import *
 
+
 urlpatterns = [
     path('upload-video', VideoView.as_view()),
     path('get-video/<str:videoId>', VideoView.as_view()),

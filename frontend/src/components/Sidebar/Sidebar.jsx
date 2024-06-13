@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { logout } from '../../features/auth/authSlice.js'
+import { useSelector } from 'react-redux'
 import channelService from '../../api/channelapi.js'
-import { isTokenExist, isTokenValid } from '../../utils/tokenVerify.js'
 
 
 export default function Sidebar({currentPath}) {
     const navigate = useNavigate()
     const [channel, setChannel] = useState({})
-    const dispatch = useDispatch()
     const userStatus = useSelector(state => state.auth.status)
     const userData = useSelector(state => state.auth.userData)
     const [error, setError] = useState(null)
@@ -19,11 +16,19 @@ export default function Sidebar({currentPath}) {
     }
 
     const navigateSubscription = () => {
-        navigate('/subscription')
+        if (!userStatus) {
+            alert('Please Login')
+            navigate('/login')
+        } else {
+            navigate('/subscription')
+        }
     }
 
     const navigateYourChannel = () => {
-        if (error?.status_code >= 400) {
+        if (!userStatus) {
+            alert('Please Login')
+            navigate('/login')
+        } else if (error?.status_code >= 400) {
             alert(error.message)
         } else {
             navigate(`/channel/${channel?._id}?${channel?.channelHandle}`)
@@ -70,7 +75,7 @@ export default function Sidebar({currentPath}) {
                     </li>
                 ) : (
                     <li className='hover:bg-gray-800 rounded-md py-2 cursor-pointer' onClick={navigateSubscription}>
-                        <Link className='px-3 font-semibold' to="/subscription">Subscriptions</Link>
+                        <Link className='px-3 font-semibold'>Subscriptions</Link>
                     </li>
                 )}
                 <hr className='my-2 border-gray-400' />
@@ -79,14 +84,8 @@ export default function Sidebar({currentPath}) {
                         <Link className='px-3 font-semibold' to={`/channel/${channel?._id}`}>Your channel</Link>
                     </li>
                 ) : (
-                    <li className='hover:bg-gray-800 rounded-md py-2 cursor-pointer'>
-                        <Link 
-                            className='px-3 font-semibold' 
-                            //</li>to={`/channel/${channel?._id}?${channel?.channelHandle}`} 
-                            onClick={navigateYourChannel}
-                        >
-                            Your channel
-                        </Link>
+                    <li className='hover:bg-gray-800 rounded-md py-2 cursor-pointer' onClick={navigateYourChannel}>
+                        <Link className='px-3 font-semibold'>Your channel</Link>
                     </li>
                 )}
             </ul>
